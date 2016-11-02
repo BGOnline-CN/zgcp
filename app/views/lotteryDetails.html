@@ -1,0 +1,118 @@
+<div class="title">
+    <a ui-sref="app.homePage">首页</a> > 
+    <span issue></span>
+</div>
+<div class="row" ng-controller="LotteryDetailsController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                        <th style="width: 30%">
+                            彩种
+                            <div select-lottery></div>
+                        </th>
+                        <th style="width: 70%">
+                            期数
+                            <div lottery-issue></div>
+                        </th>
+                     </tr>
+               </thead>
+               <tbody class="ball-details" ng-if="!isHaveData">
+                    <tr>
+                        <td colspan="2">
+                            <i loading-font></i>
+                            <no-data></no-data>
+                        </td>
+                    </tr>
+               </tbody>
+               <tbody class="ball-details" ng-if="isHaveData">
+                    <tr>
+                        <td colspan="2">
+                            <i loading-font></i>
+                            <p class="ball-details-title">
+                                <span>
+                                    <span ng-repeat="o in lotteryList" ng-if="data.lottery_code == o.lotteryCode">{{ o.name }}</span>
+                                    第{{ data.expect }}开奖结果
+                                </span>
+                                <span style="float: right;color: #bbb;font-weight: 500;">
+                                    开奖时间 {{ data.opentime * 1000 | date:'yyyy-MM-dd hh:mm' }}
+                                </span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="IGKbet">
+                        <td>
+                            <ul>
+                                <li>销量：<span ng-bind="data.buy_score"></span>元</li>
+                                <li>奖金：<span ng-bind="data.issue_score"></span>元</li>
+                            </ul>
+                            <ul>
+                                <!--<li>红球号码：<span>15 24 36 78 12</span></li>
+                                <li>篮球号码：<span style="color: #78A7DE">08</span></li>-->
+                                <li>开奖号码：<span>{{ data.opencode }}</span></li>
+                            </ul>
+                        </td>
+                        <td>
+                            <table class="bgTable">
+                                <thead>
+                                    <tr>
+                                        <th>奖级</th>
+                                        <th>中奖注数</th>
+                                        <th>每注金额</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>一等奖</td>
+                                        <td>6</td>
+                                        <td>124545</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p class="ball-details-title">中奖用户</p>
+                        </td>
+                    </tr>
+                    <tr class="winningUser" ng-controller="WinningUserController">
+                        <td colspan="2">
+                            <table class="bgTable">
+                                <thead>
+                                    <tr>
+                                        <th>订单id</th>
+                                        <th>用户id</th>
+                                        <th>购买号码</th>
+                                        <th>倍数</th>
+                                        <th>注数</th>
+                                        <th>奖级</th>
+                                        <th>奖金</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="d in data">
+                                        <td ng-bind="d.order_id"></td>
+                                        <td ng-bind="d.user_id"></td>
+                                        <td>
+                                            <span style="display: block;" ng-repeat="db in d.buy_code" ng-bind="db"></span>
+                                        </td>
+                                        <td ng-bind="d.multiples"></td>
+                                        <td ng-bind="d.number"></td>
+                                        <td>
+                                            <ol style="margin: 0;padding: 0;">
+                                                <li ng-repeat="dl in d.level_bonus" style="list-style: none;">
+                                                    <span style="display: block;" ng-repeat="dll in dl" ng-bind="dll.award_grades + ' 中 ' + dll.number + ' 注 单注奖金 ' + dll.score + '元  共' + dll.number * dll.score + '元'"></span>
+                                                </li>
+                                            </ol>
+                                        </td>
+                                        <td ng-bind="d.bonus + '元'"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

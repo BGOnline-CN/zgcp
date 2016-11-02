@@ -1,0 +1,40 @@
+<div class="title">开奖公告</div>
+<div class="row" ng-controller="LotteryNoticeController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th style="width: 12%">彩种</th>
+                           <th style="width: 12%">期次</th>
+                           <th style="width: 16%">开奖时间</th>
+                           <th style="width: 16%">开奖号码</th>
+                           <th style="width: 10%">购买金额</th>
+                           <th style="width: 10%">中奖金额</th>
+                           <th style="width: 16%">下期开奖时间</th>
+                           <th style="width: 8%">操作</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data">
+                           <td><a ui-sref="app.lotteryHistory" ng-bind="d.lottery_name" ng-click="goLotteryHistory(d.lottery_code)"></a></td>
+                           <td ng-bind="d.expect"></td>
+                           <td>{{ d.opentime | timeFilter }}</td>
+                           <td ng-bind="d.opencode" style="color: #EA5A5A"></td>
+                           <td ng-bind="d.buy_score"></td>
+                           <td ng-bind="d.issue_score"></td>
+                           <td>{{ d.next_opentime | timeFilter }}</td>
+                           <td><a ui-sref="app.lotteryDetails" ng-click="lotteryDetails(d.lottery_code, d.expect)">详情</a></td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>
+<div class="title">彩票列表</div>
+<div class="row" ng-controller="LotteryListController">
+   <div class="col-xs-2" ng-repeat="cp in lotteryList">
+         <div class="panel ball-panel" ui-sref="app.setLottery" ng-click="goLotteryHistory(cp.lotteryCode)">
+               <img ng-src="{{ cp.img }}" alt="{{cp.name}}">
+               <span ng-bind="cp.name">双色球</span>
+         </div>
+   </div>
+</div>

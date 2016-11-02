@@ -1,0 +1,35 @@
+<div class="title">分类列表</div>
+<div class="row" ng-controller="CategoryController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th style="width: 25%">分类名称</th>
+                           <th style="width: 25%">分类说明</th>
+                           <th style="width: 25%">类型</th>
+                           <th style="width: 25%">操作</th>
+                     </tr>
+               </thead>
+               <tbody id="sortTbody">
+                     <tr class="forefatherSort">
+                           <td colspan="4"> 
+                              <div treecontrol class="tree-classic"
+                                    tree-model="dataForTheTree"
+                                    options="treeOptions"
+                                    on-selection="showSelected(node)"
+                                    selected-node="node1">
+                                    <div class="node-con">{{node.cat_name}}</div>
+                                    <div class="node-con">{{node.explain}}</div>
+                                    <span category-type="{{ node.type }}" class="node-con"></span>
+                                    <div class="node-con">
+                                          <a href="">编辑</a>
+                                          <a href="">删除</a>
+                                          <a href="">新增</a>
+                                    </div>
+                              </div>
+                           </td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

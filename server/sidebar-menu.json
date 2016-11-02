@@ -1,0 +1,52 @@
+[
+  {
+    "sref": "app.homePage",
+    "icon": "",
+    "translate": "sidebar.nav.HOMEPAGE"
+  },
+  {
+    "sref": "app.category",
+    "icon": "",
+    "translate": "sidebar.nav.CATEGORY"
+  },
+  {
+    "sref": "app.coupon",
+    "icon": "",
+    "translate": "sidebar.nav.COUPON"
+  },
+  {
+    "sref": "#",
+    "icon": "",
+    "submenu": [
+      {
+        "sref": "app.news", 
+        "translate": "sidebar.nav.ARTICLE.NEWS" 
+      },
+      {
+        "sref": "app.strategy",
+        "translate": "sidebar.nav.ARTICLE.STRATEGY"
+      }    
+    ],
+    "translate": "sidebar.nav.ARTICLE"
+  },
+  {
+    "sref": "app.ad",
+    "icon": "",
+    "translate": "sidebar.nav.AD"
+  },
+  {
+    "sref": "app.userList",
+    "icon": "",
+    "translate": "sidebar.nav.USERLIST"
+  },
+  {
+    "sref": "app.check-ins",
+    "icon": "",
+    "translate": "sidebar.nav.CHECK-INS"
+  },
+  {
+    "sref": "app.system",
+    "icon": "",
+    "translate": "sidebar.nav.SYSTEM"
+  }
+]

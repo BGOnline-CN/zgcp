@@ -1,0 +1,40 @@
+<div class="title">用户列表
+    
+    
+</div>
+<div class="row" ng-controller="UsersListController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>头像</th>
+                           <th>用户id</th>
+                           <th>昵称</th>
+                           <th>性别</th>
+                           <th>彩金数</th>
+                           <th>省份</th>
+                           <th>城市</th>
+                           <th>状态</th>
+                           <th>最近登录时间</th>
+                           <th>操作</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data">
+                           <td>
+                               <img class="header" ng-src="{{ d.header }}" alt="头像">
+                           </td>
+                           <td ng-bind="d.user_id"></td>
+                           <td ng-bind="d.nickname"></td>
+                           <td><span sex="{{ d.sex }}"></span></td>
+                           <td ng-bind="d.score"></td>
+                           <td ng-bind="d.province"></td>
+                           <td ng-bind="d.city"></td>
+                           <td><span is-locked="{{ d.is_locked }}"></span></td>
+                           <td>{{ d.login_time * 1000 | date:'yyyy-MM-dd hh:mm' }}</td>
+                           <td>暂无</td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

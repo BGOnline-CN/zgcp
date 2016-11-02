@@ -1,0 +1,53 @@
+<div class="title">签到配置
+      <span style="margin-left: 50px;">月份</span>
+      <div date-picker month="month"></div>
+      <button class="btn btn-danger" style="border-radius: 30px;float: right;padding: 3px 16px;" ng-click="reset()">
+            <i class="fa fa-repeat"></i>
+            全部重置
+       </button>
+</div>
+<div class="row" ng-controller="CheckInsController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white bgTable-center">
+               <thead>
+                     <tr>
+                           <th style="width: 15%;">连续签到天数</th>
+                           <th style="width: 20%;">点券</th>
+                           <th style="width: 20%;">彩金</th>
+                           <th style="width: 20%;">彩票</th>
+                           <th style="width: 15%;">大奖特别标注</th>
+                           <th style="width: 10%;">操作</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in param.numOfDay">
+                           <td>{{ $index + 1 + ' 天' }}</td>
+                           <td>
+                                 <span style="color: #EB5C5C" ng-bind="d.prize_coupon ? d.prize_coupon  + ' 张' : '0 张'" ng-show="!d.isEdit"></span>
+                                 <div num-select num="d.prize_coupon" ng-show="d.isEdit"></div>
+                           </td>
+                           <td>
+                                 <span style="color: #1990F2" ng-bind="d.prize_score ? d.prize_score  + ' 张' : '0 张'" ng-show="!d.isEdit"></span>
+                                 <div num-select num="d.prize_score" ng-show="d.isEdit"></div>
+                           </td>
+                           <td>
+                                 <span style="color: #78DB51" ng-bind="d.prize_lottery ? d.prize_lottery  + ' 张' : '0 张'" ng-show="!d.isEdit"></span>
+                                 <div num-select num="d.prize_lottery" ng-show="d.isEdit"></div>
+                           </td>
+                           <td>
+                                 <div ng-show="d.isEdit">
+                                    <input type="checkbox" ng-model="d.is_grand_prix" ng-checked="!d.is_grand_prix ? false : true">
+                                 </div>
+                                 <div ng-show="!d.isEdit">
+                                    <i class="fa fa-star" style="color: #EFAD4D;font-size: 1.5em;" ng-show="d.is_grand_prix"></i>
+                                 </div>
+                           </td>
+                           <td>
+                                 <a href="" ng-click="showEdit($index, d.isEdit)" ng-show="d.isEdit">保存</a>
+                                 <a href="" ng-click="showEdit($index, d.isEdit)" ng-show="!d.isEdit"><i class="fa fa-edit"></i></a>
+                           </td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

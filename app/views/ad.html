@@ -1,0 +1,41 @@
+<div class="title">广告管理
+    
+    <button class="btn btn-danger" style="border-radius: 30px;float: right;padding: 3px 16px;">
+        <i class="fa fa-plus"></i>
+        新增广告
+    </button>
+</div>
+<div class="row" ng-controller="AdController">
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>广告ID</th>
+                           <th>产品名称</th>
+                           <th>图片</th>
+                           <th>跳转地址</th>
+                           <th>生效时间</th>
+                           <th>结束时间</th>
+                           <th>操作</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data">
+                           <td ng-bind="d.ad_id"></td>
+                           <td ng-bind="d.name"></td>
+                           <td>
+                               <img ng-src="{{ rootImgUrl + d.img }}" class="header" alt="广告图">
+                           </td>
+                           <td><a ng-href="{{ d.link }}" target="_blank">{{ d.link }}</a></td>
+                           <td ng-bind="d.begin_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                           <td ng-bind="d.end_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                           <td>
+                               <a href="">查看</a>
+                               <a href="">编辑</a>
+                               <a href="">删除</a>
+                           </td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>
