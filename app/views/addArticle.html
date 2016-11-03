@@ -1,14 +1,18 @@
 <div class="row" ng-controller="AddArticleController">
    <div class="col-xs-12">
        <div class="title">
-            <a ui-sref="app.homePage">首页</a> > 
-            新建文章
+            <a ui-sref="app.news">文章</a> > 
+            <span ng-show="param.actionType == 0">新建文章</span>
+            <span ng-show="param.actionType == 1">修改文章</span>
+            <span ng-show="param.actionType == 2">查看文章</span>
        </div>
    </div>
    <div class="col-xs-12">
        <form name="articleForm" novalidate ng-submit="save()">
            <div class="panel form-panel">
-                <p class="big-title">新建文章</p>
+                <p class="big-title" ng-show="param.actionType == 0">新建文章</p>
+                <p class="big-title" ng-show="param.actionType == 1">修改文章</p>
+                <p class="big-title" ng-show="param.actionType == 2">查看文章</p>
                 <div class="form-con-div">
                     <p class="form-con-title">文章标题：</p>
                     <input type="text" name="title" ng-model="title">
@@ -16,16 +20,34 @@
                 <div class="form-con-div">
                     <p class="form-con-title">文章内容：</p>
                     <div style="width: 60%;">
-                        <textarea id="con-textarea" style="height:350px;">
-                            <p>请输入内容...</p>
-                        </textarea>
+                        <div id="editor-trigger" ng-model="content" contenteditable="true" url="{{ rootUrl }}" style="height:350px;">
+                        </div>
                     </div>
                 </div>
-                <div class="form-con-div">
+                <div class="form-con-div clearfix">
                     <p class="form-con-title">文章封面：</p>
-                    <input type="text">
+                    <div class="col-xs-3">
+                        <div class="pvw-div">
+                            <p>
+                                <a href="">删除</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="uploadImg-div">
+                            <span class="fa-stack fa-lg font">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <p>上传图片</p>
+                            <span class="tip">格式：jpg.png</span>
+                            <span class="tip">推荐尺寸：255*180</span>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-danger">发布文章</button>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 0">发布文章</button>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 1">确定修改</button>
+                <button type="button" class="btn btn-danger" ui-sref="app.news" ng-show="param.actionType == 2">返回上一页</button>
            </div>
        </form>
    </div>

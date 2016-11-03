@@ -333,3 +333,63 @@ div.title {
     padding: 3px 12px;
     border: 1px solid #EBEFF1;
 }
+.form-con-div > .col-xs-3 {
+    padding: 0;
+}
+.form-con-div .pvw-div {
+    width: 255px;
+    height: 180px;
+    border: 1px solid #EFF2F4;
+    position: relative;
+}
+.form-con-div .pvw-div p {
+    padding: 5px 10px;
+    margin: 0;
+    background-color: rgba(0,0,0,0.5);
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: none;
+}
+
+.form-con-div .pvw-div p a {
+  color: #FFFFFF;
+}
+
+@media \0screen\,screen\9 {
+  .form-con-div .pvw-div p {
+    background-color:#000000;
+    filter:Alpha(opacity=50);
+    position:static; 
+    *zoom:1; 
+  }
+  .form-con-div .pvw-div p a {
+    position: relative;/* 设置子元素为相对定位，可让子元素不继承Alpha值 */
+  }  
+}
+
+.form-con-div .uploadImg-div {
+    width: 255px;
+    height: 180px;
+    border: 1px dashed #DEE4E7;
+    text-align: center;
+}
+.form-con-div .uploadImg-div > p {
+    margin-top: 10px;
+}
+
+.form-con-div .uploadImg-div > .tip {
+    display: block;
+    color: #B5B5B5;
+    margin-top: 5px;
+    font-size: .8em;
+}
+.form-con-div .uploadImg-div > .font {
+    font-size: 15px;
+    margin-top: 40px;
+    color: #EA5A59;
+}
+.form-con-div .uploadImg-div > .font .fa-plus:before{
+    vertical-align: middle;
+}
