@@ -97,7 +97,7 @@
                                     <tr ng-repeat="d in data">
                                         <td ng-bind="d.record_id"></td>
                                         <td ng-bind="d.expect"></td>
-                                        <td ng-bind="d.opentime * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                                        <td ng-bind="d.opentime ? d.opentime * 1000 : return | date: 'yyyy-MM-dd hh:ss'"></td>
                                         <td ng-bind="d.opencode" style="color: #EA5A5A"></td>
                                         <td ng-bind="d.buy_score"></td>
                                         <td ng-bind="d.issue_score"></td>

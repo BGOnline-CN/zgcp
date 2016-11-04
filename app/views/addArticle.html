@@ -16,6 +16,9 @@
                 <div class="form-con-div">
                     <p class="form-con-title">文章标题：</p>
                     <input type="text" name="title" ng-model="title">
+                    <div class="error" ng-show="articleForm.title.$dirty && articleForm.title.$invalid">
+                        <small ng-show="articleForm.title.$error.required">必填</small>
+                    </div>
                 </div>
                 <div class="form-con-div">
                     <p class="form-con-title">文章内容：</p>
@@ -25,15 +28,16 @@
                 </div>
                 <div class="form-con-div clearfix">
                     <p class="form-con-title">文章封面：</p>
-                    <div class="col-xs-3">
+                    <div class="col-xs-3" ng-show="pvwImg">
                         <div class="pvw-div">
+                            <img ng-src="pvwImg" alt="预览图">
                             <p>
                                 <a href="">删除</a>
                             </p>
                         </div>
                     </div>
                     <div class="col-xs-3">
-                        <div class="uploadImg-div" ngf-select ng-model="file" name="file" ngf-pattern="'image/*" accept="image/*" ngf-max-size="20MB">
+                        <div class="uploadImg-div" file-model="myFile">
                             <span class="fa-stack fa-lg font">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
