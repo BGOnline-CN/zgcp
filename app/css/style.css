@@ -342,6 +342,10 @@ div.title {
     border: 1px solid #EFF2F4;
     position: relative;
 }
+
+.form-con-div .pvw-div:hover p {
+    opacity: 1;
+}
 .form-con-div .pvw-div p {
     padding: 5px 10px;
     margin: 0;
@@ -350,7 +354,8 @@ div.title {
     position: absolute;
     bottom: 0;
     width: 100%;
-    display: none;
+    opacity: 0;
+    transition: all .5s;
 }
 
 .form-con-div .pvw-div p a {

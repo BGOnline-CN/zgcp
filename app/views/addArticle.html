@@ -20,8 +20,7 @@
                 <div class="form-con-div">
                     <p class="form-con-title">文章内容：</p>
                     <div style="width: 60%;">
-                        <div id="editor-trigger" ng-model="content" contenteditable="true" url="{{ rootUrl }}" style="height:350px;">
-                        </div>
+                        <div id="editor-trigger" ng-model="content" contenteditable="true" url="{{ rootUrl }}" style="height:350px;"></div>
                     </div>
                 </div>
                 <div class="form-con-div clearfix">
@@ -34,7 +33,7 @@
                         </div>
                     </div>
                     <div class="col-xs-3">
-                        <div class="uploadImg-div">
+                        <div class="uploadImg-div" ngf-select ng-model="file" name="file" ngf-pattern="'image/*" accept="image/*" ngf-max-size="20MB">
                             <span class="fa-stack fa-lg font">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-plus fa-stack-1x fa-inverse"></i>

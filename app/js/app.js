@@ -45,9 +45,10 @@ App.run(["$rootScope", "$state", "$stateParams",  '$window', '$templateCache', f
         { img:'app/img/fc3d.png', name: '福彩3D', lotteryCode: 'fc3d'}
     ]
 
-    $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
-    // $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
-    $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
+    // $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
+    $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
+    // $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
+    $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
     // Uncomment this to disable template cache
     /*$rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
         if (typeof(toState) !== 'undefined'){
@@ -174,7 +175,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         url: '/addArticle',
         title: '文章管理',
         templateUrl: helper.basepath('addArticle.html'),
-        resolve: helper.resolveFor('jquery', 'editor')
+        resolve: helper.resolveFor('jquery', 'editor', 'ngFileUpload')
     })
 
     .state('app.system', {
@@ -323,7 +324,9 @@ App
     modules: [
       { name: 'treeControl', files: ['vendor/angular-tree/js/angular-tree-control.js',
                                      'vendor/angular-tree/css/tree-control.css',
-                                     'vendor/angular-tree/css/tree-control-attribute.css']}
+                                     'vendor/angular-tree/css/tree-control-attribute.css']},
+      { name: 'ngFileUpload', files: ['vendor/ng-file-upload/dist/ng-file-upload.min.js',
+                                      'vendor/ng-file-upload/dist/ng-file-upload-shim.min.js']}
     ]
 
   })
@@ -1467,37 +1470,44 @@ App.directive('numSelect', function() { // 数量选择器
 App.directive('contenteditable', function() { // 集成wangEditor
     return {
         restrict: 'A' ,
-        require: 'ngModel',
+        require: '?ngModel',
         scope: {
             url: '@url'
         },
-        link: function(scope, element, attrs, ctrl) {
-            var editor = new wangEditor('editor-trigger');
-            editor.onchange = function () {
-                scope.$apply(function () {
-                    var html = editor.$txt.html();
-                    ctrl.$setViewValue(html);
-                });
+        link: function(scope, element, attrs, ngModel) {
+            if (!ngModel) return;
+            ngModel.$render = function() {
+                element.html(ngModel.$viewValue || '');
             };
+            element.on('blur keyup mouseout mouseup change', function() {
+                scope.$apply(readViewText);
+            });
+            
+            function readViewText() {
+                var html = element.html();
+                if (attrs.stripBr && html === '<br>') {
+                    html = '';
+                }
+                ngModel.$setViewValue(html);
+            }
 
-            editor.config.menus = $.map(wangEditor.config.menus, function(item, key) { // 移除插入代码和全屏功能与地图功能
-                if (item === 'insertcode') {
-                    return null;
-                }
-                if (item === 'fullscreen') {
-                    return null;
-                }
-                if (item === 'location') {
-                    return null;
-                }
+            // 创建编辑器
+            wangEditor.config.printLog = false;
+            var editor = new wangEditor(element);
+
+            // 移除插入代码和全屏功能与地图功能
+            editor.config.menus = $.map(wangEditor.config.menus, function(item, key) { 
+                if (item === 'insertcode') return null;
+                if (item === 'fullscreen') return null; 
+                if (item === 'location') return null; 
                 return item;
             });
 
-            editor.config.uploadImgUrl = scope.url + 'gd/uploads';
-            console.log(scope.url)
+            editor.config.uploadImgUrl = scope.url + 'gd/upload';
             editor.config.pasteText = true // 只粘贴纯文本
- 
+
             editor.create();
+
         }
     };
 });
@@ -2016,15 +2026,37 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
 
 
 // 文章管理
-App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit) {
+App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', 'Upload', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, Upload) {
     
-    $('.pvw-div').mouseover(function() {
-        $(this).find('p').fadeIn();
-    })
+    $scope.uploadImg = '';
+    //提交
+    $scope.submit = function () {
+        $scope.upload($scope.file);
+    };
+    $scope.upload = function (file) {
+        $scope.fileInfo = file;
+        Upload.upload({
+            //服务端接收
+            url: 'Ashx/UploadFile.ashx',
+            //上传的同时带的参数
+            data: { 'username': $scope.username },
+            file: file
+        }).progress(function (evt) {
+            //进度条
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progess:' + progressPercentage + '%' + evt.config.file.name);
+        }).success(function (data, status, headers, config) {
+            //上传成功
+            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+            $scope.uploadImg = data;
+        }).error(function (data, status, headers, config) {
+            //上传失败
+            console.log('error status: ' + status);
+        });
+    };
 
-    $('.pvw-div').mouseout(function() {
-        $(this).find('p').fadeOut();
-    })
+
+
 
     $scope.param = ParamTransmit.getParam();
     switch($scope.param.actionType) {
@@ -2037,7 +2069,6 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
                 ConnectApi.start('post', 'faq/add', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
-                    console.log('BGONLINE.CN - 添加成功！');
                     $state.go('app.news');
                 });
             }
@@ -2055,10 +2086,9 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
                 $scope.param.content = $scope.content;
                 $scope.param.summary = $scope.content.substr(0, 100);
                 $scope.param.img = '';
-                ConnectApi.start('post', 'faq/add', $scope.param).then(function(response) {
+                ConnectApi.start('post', 'faq/edit', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
-                    console.log('BGONLINE.CN - 添加成功！');
                     $state.go('app.news');
                 });
             }
