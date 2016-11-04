@@ -45,10 +45,12 @@ App.run(["$rootScope", "$state", "$stateParams",  '$window', '$templateCache', f
         { img:'app/img/fc3d.png', name: '福彩3D', lotteryCode: 'fc3d'}
     ]
 
-    // $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
-    $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
-    // $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
-    $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
+    $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
+    $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
+
+    // $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
+    // $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
+
     // Uncomment this to disable template cache
     /*$rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
         if (typeof(toState) !== 'undefined'){
@@ -175,7 +177,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         url: '/addArticle',
         title: '文章管理',
         templateUrl: helper.basepath('addArticle.html'),
-        resolve: helper.resolveFor('jquery', 'editor', 'ngFileUpload')
+        resolve: helper.resolveFor('jquery', 'editor', 'angularFileUpload') 
     })
 
     .state('app.system', {
@@ -325,8 +327,7 @@ App
       { name: 'treeControl', files: ['vendor/angular-tree/js/angular-tree-control.js',
                                      'vendor/angular-tree/css/tree-control.css',
                                      'vendor/angular-tree/css/tree-control-attribute.css']},
-      { name: 'ngFileUpload', files: ['vendor/ng-file-upload/dist/ng-file-upload.min.js',
-                                      'vendor/ng-file-upload/dist/ng-file-upload-shim.min.js']}
+      { name: 'angularFileUpload', files: ['vendor/angular-file-upload/angular-file-upload.js']},
     ]
 
   })
@@ -1502,7 +1503,7 @@ App.directive('contenteditable', function() { // 集成wangEditor
                 if (item === 'location') return null; 
                 return item;
             });
-
+            
             editor.config.uploadImgUrl = scope.url + 'gd/upload';
             editor.config.pasteText = true // 只粘贴纯文本
 
@@ -1511,6 +1512,7 @@ App.directive('contenteditable', function() { // 集成wangEditor
         }
     };
 });
+
 
 
 
@@ -1542,8 +1544,8 @@ App.factory('ConnectApi', function($rootScope, $http) {
 
 
 
-// 日期格式化
-App.filter('timeFilter', function() {
+
+App.filter('timeFilter', function() { // 日期格式化
 
     //获取相对日期
     function GetRelativeDate(timestampstr) {
@@ -1615,54 +1617,65 @@ App.filter('timeFilter', function() {
 })
 
 
+
+
+App.filter('to_trusted', ['$sce', function ($sce) { // html代码格式化
+    return function (text) {
+        return $sce.trustAsHtml(text);
+    };
+}]);
+
+
+
+
 // 参数传递
 App.factory('ParamTransmit', function($parse) {
 
    var saveParam = function(param) {
        sessionStorage.setItem('paramSession', JSON.stringify(param));
    }
+   
+   var judgeOldParam = function(oldParam, param) { // 判断是否有新的token传入
 
-   var judgeOldParam = function(oldParam, param) {
-       if(oldParam) {
-            if(param.token) {
-                saveParam(param);
-            }else if(!param.token && oldParam.token) {
-                param.token = oldParam.token;
-                saveParam(param);
-            }else {
-                console.log('token不存在，请手动设置token之后再调用setParam。');
-                saveParam(param);
-            }
-        }else {
-            saveParam(param);
-        }
+       if(!param.token) {
+           if(oldParam.token) {
+               param.token = oldParam.token;
+           }else {
+               console.log('token不存在，请手动设置token之后再调用setParam。');
+           }
+       }
+       saveParam(param);
    }
    
+   var paramJson = function() {
+       return JSON.parse(sessionStorage.paramSession);
+   }
+
    return {
+       
       setParam: function(param) {
-          try {
-            var oldParam = JSON.parse(sessionStorage.paramSession);
-            judgeOldParam(oldParam, param);
-          } catch(err) {
-            console.log('第一次设置paramSession');
+         try {
+            var oldParam = paramJson();
+         } catch(err) {
+            console.log('首次设置paramSession成功！');
             var oldParam = false;
-            judgeOldParam(oldParam, param);
          }
-         return JSON.parse(sessionStorage.paramSession);
+         judgeOldParam(oldParam, param);
+         return paramJson();
       },
-      getParam: function() {
-          return JSON.parse(sessionStorage.paramSession);
-      },
+
+
+      getParam: function() { return paramJson(); },
+
       removeParam: function(key) {
-          var param = JSON.parse(sessionStorage.paramSession);
-          var delExpr = 'delete param.' + key;
-          eval(delExpr);
-          sessionStorage.setItem('paramSession', JSON.stringify(param));
-          return JSON.parse(sessionStorage.paramSession);
+         var param = paramJson();
+         var delExpr = 'delete param.' + key;
+         eval(delExpr);
+         sessionStorage.setItem('paramSession', JSON.stringify(param));
+         return paramJson();
       },
-      clearParam: function() {
-          sessionStorage.removeItem('paramSession');
-      }
+
+      clearParam: function() { sessionStorage.removeItem('paramSession'); }
 
    }
    
@@ -1869,9 +1882,13 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
             $scope.data = data.data;
             for(var i = 0; i < $scope.data.length; i++) {
 
-                parseInt($scope.data[i].prize_coupon) ? $scope.data[i].prize_coupon = parseInt($scope.data[i].prize_coupon) : $scope.data[i].prize_coupon = 0;
-                parseInt($scope.data[i].prize_score) ? $scope.data[i].prize_score = parseInt($scope.data[i].prize_score) : $scope.data[i].prize_score = 0;
-                parseInt($scope.data[i].prize_lottery) ? $scope.data[i].prize_lottery = parseInt($scope.data[i].prize_lottery) : $scope.data[i].prize_lottery = 0;
+                var pc = parseInt($scope.data[i].prize_coupon);
+                var ps = parseInt($scope.data[i].prize_score);
+                var pl = parseInt($scope.data[i].prize_lottery);
+                
+                $scope.data[i].prize_coupon = pc ? pc : 0;
+                $scope.data[i].prize_score = ps ? ps : 0;
+                $scope.data[i].prize_lottery = pl ? pl : 0;
 
                 $scope.param.numOfDay[$scope.data[i].frequency - 1] = $scope.data[i];
                 if($scope.data[i].is_grand_prix == 1 ) {
@@ -1989,10 +2006,14 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
 
     $scope.param = ParamTransmit.getParam();
 
-    ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data.mod_data;
-    });
+    var getFaqList = function() {
+        ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data.mod_data;
+        });
+    }
+    
+    getFaqList();
 
     $scope.article = function(act, id) {
         var actionType = act;
@@ -2015,6 +2036,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
                 ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
+                    getFaqList();
                 });
                 break;
 
@@ -2026,46 +2048,42 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
 
 
 // 文章管理
-App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', 'Upload', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, Upload) {
-    
-    $scope.uploadImg = '';
-    //提交
-    $scope.submit = function () {
-        $scope.upload($scope.file);
-    };
-    $scope.upload = function (file) {
-        $scope.fileInfo = file;
-        Upload.upload({
-            //服务端接收
-            url: 'Ashx/UploadFile.ashx',
-            //上传的同时带的参数
-            data: { 'username': $scope.username },
-            file: file
-        }).progress(function (evt) {
-            //进度条
-            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            console.log('progess:' + progressPercentage + '%' + evt.config.file.name);
-        }).success(function (data, status, headers, config) {
-            //上传成功
-            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-            $scope.uploadImg = data;
-        }).error(function (data, status, headers, config) {
-            //上传失败
-            console.log('error status: ' + status);
-        });
-    };
-
-
-
+App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', 'FileUploader', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, FileUploader) {
 
     $scope.param = ParamTransmit.getParam();
+
+    var uploader = $scope.uploader = new FileUploader({
+        url: ''+ $rootScope.rootUrl +'gd/upload'
+    })
+
+    uploader.onSuccessItem = function(response) {
+        $scope.pvwImg = response._xhr.response;
+    };
+
+    var isEditOrNew = function() { // 不管是在新增还是编辑状态 都启用这个方法
+
+        $scope.param.title = $scope.title;
+        $scope.param.content = $scope.content;
+        $scope.param.summary = $scope.content.replace(/<[^>]*>|/g,"").substr(0, 100);
+        $scope.param.img = $scope.pvwImg;
+        return $scope.param;
+    }
+
+    var getFaqDetails = function() { // 获取文章详情
+        ConnectApi.start('post', 'faq/getfaq', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            $scope.title = $scope.data.title;
+            $scope.content = $scope.data.content;
+            $scope.pvwImg = $scope.data.img;
+        });
+    }
+
+
     switch($scope.param.actionType) {
         case 0:
             $scope.save = function() {
-                $scope.param.title = $scope.title;
-                $scope.param.content = $scope.content;
-                $scope.param.summary = $scope.content.substr(0, 100);
-                $scope.param.img = '';
+                isEditOrNew();
                 ConnectApi.start('post', 'faq/add', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
@@ -2074,18 +2092,9 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
             }
             break;
         case 1: 
-            ConnectApi.start('post', 'faq/getfaq', $scope.param).then(function(response) {
-                var data = ConnectApi.data(response);
-                $scope.data = data.data;
-                $scope.title = $scope.data.title;
-                $scope.content = $scope.data.content;
-            });
-
+            getFaqDetails();
             $scope.save = function() {
-                $scope.param.title = $scope.title;
-                $scope.param.content = $scope.content;
-                $scope.param.summary = $scope.content.substr(0, 100);
-                $scope.param.img = '';
+                isEditOrNew();
                 ConnectApi.start('post', 'faq/edit', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
@@ -2094,13 +2103,7 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
             }
             break;
         case 2: 
-            ConnectApi.start('post', 'faq/getfaq', $scope.param).then(function(response) {
-                var data = ConnectApi.data(response);
-                $scope.data = data.data;
-                $scope.title = $scope.data.title;
-                $scope.content = $scope.data.content;
-            });
-            
+            getFaqDetails();
             break;
     }
 

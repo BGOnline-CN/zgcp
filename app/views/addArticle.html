@@ -28,16 +28,17 @@
                 </div>
                 <div class="form-con-div clearfix">
                     <p class="form-con-title">文章封面：</p>
-                    <div class="col-xs-3" ng-show="pvwImg">
+                    <div class="col-xs-3" ng-show="pvwImg || param.actionType == 2">
                         <div class="pvw-div">
-                            <img ng-src="pvwImg" alt="预览图">
-                            <p>
-                                <a href="">删除</a>
+                            <img ng-src="{{ pvwImg }}" alt="预览图">
+                            <p ng-show="param.actionType == 0 || param.actionType == 1">
+                                <a href="" ng-click="pvwImg = ''">删除</a>
                             </p>
                         </div>
                     </div>
-                    <div class="col-xs-3">
-                        <div class="uploadImg-div" file-model="myFile">
+                    <div class="col-xs-3" ng-show="param.actionType == 0 || param.actionType == 1">
+                        <div class="uploadImg-div">
+                            <input type="file" nv-file-select="" uploader="uploader" class="file-input">
                             <span class="fa-stack fa-lg font">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
