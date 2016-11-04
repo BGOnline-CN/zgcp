@@ -45,11 +45,11 @@ App.run(["$rootScope", "$state", "$stateParams",  '$window', '$templateCache', f
         { img:'app/img/fc3d.png', name: '福彩3D', lotteryCode: 'fc3d'}
     ]
 
-    $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
-    $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
+    // $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
+    // $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
 
-    // $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
-    // $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
+    $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
+    $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
 
     // Uncomment this to disable template cache
     /*$rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
