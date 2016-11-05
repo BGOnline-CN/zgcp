@@ -1263,22 +1263,22 @@ App.directive('lotteryIssue', function() { // 输入期数查询
             var timeout;
             $scope.$watch('expect', function(newVal, oldVal) {
                 if (newVal !== oldVal) {
-                    $rootScope.isLoading = true;
                     if(timeout) $timeout.cancel(timeout);
                         timeout = $timeout(function() {
+                            $rootScope.isLoading = true;
                             $scope.param = lottery;
                             $scope.param.expect = $scope.expect;
                             ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
                                 var data = ConnectApi.data(response);
                                 $scope.data = data.data;
                                 if(!$scope.data) {
-                                    $scope.isHaveData = $rootScope.isLoading = false;
+                                    $scope.isHaveData = false;
                                 }else {
                                     $scope.isHaveData = true;
-                                    $rootScope.isLoading = false;
                                     $scope.param.expect = $rootScope.expect = $scope.expect;
                                     ParamTransmit.setParam($scope.param);
                                 }
+                                $rootScope.isLoading = false;
                             });
 
 
