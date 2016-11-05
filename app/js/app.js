@@ -1641,8 +1641,6 @@ App.factory('ParamTransmit', function($parse, $state) {
                param.token = oldParam.token;
            }else {
                console.log('token不存在，请手动设置token之后再调用setParam。');
-               alert('token丢失，即将跳转到登陆页面！');
-               $state.go('page.login');
            }
        }
        saveParam(param);
