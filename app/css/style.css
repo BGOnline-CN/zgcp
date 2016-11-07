@@ -77,11 +77,6 @@ div.title {
 .bgTable > thead {
     background-color: #EAEEF1;
 }
-.thead-white > thead > tr > th {
-    background-color: #fff;
-    border-bottom: 1px solid #F0F3F5;
-}
-
 .bgTable > thead > tr > th {
     font-weight: 500;
     color: #7895AF;
@@ -106,19 +101,6 @@ div.title {
 .btn-group, .btn-group-vertical {
     margin-left: 10px;
 }
-.bgTable > tbody.ball-details .ball-details-title {
-    padding: 20px 0 10px 0;
-    border-bottom: 1px solid #eee;
-    display: block;
-}
-.bgTable > tbody.ball-details tr td p {
-    padding-top: 10px;
-    display: inline-block;
-}
-.bgTable > tbody.ball-details .value-span {
-    color: #000;
-}
-
 .bgTable > tbody.ball-details > tr > td.IGKbet > ul {
     margin-bottom: 20px;
 }
@@ -186,11 +168,11 @@ div.title {
 .panel-set > .panel-ul > li{
     list-style: none;
     float: left;
-    width: 25%;
+    height: 30px;
+    line-height: 30px;
 }
 .panel-set > .panel-ul > li > span {
     color: #000;
-    font-size: 1.1em;
 }
 .panel-set > .panel-ul > li:last-child {
     float: right;
@@ -269,7 +251,8 @@ div.title {
     margin: 0;
     padding: 0;
     display: inline-block;
-    vertical-align: text-bottom;
+    position: relative;
+    top: -2px;
 }
 .numSelect li {
     float: left;
@@ -305,11 +288,12 @@ div.title {
 .bgTable-center tbody tr:hover {
     background-color: #F8F9FB;
 }
+
 .lotteryTime-input {
     border: 1px solid #EAEAEA;
-    padding: 3px 16px;
-    height: 30px;
-    width: 70%;
+    padding: 3px 12px;
+    height: 100%;
+    width: 65%;
 }
 .form-panel {
     padding: 25px;
@@ -417,4 +401,32 @@ div.title {
     top: 0px;
     z-index: 9999;
     cursor: pointer;
+}
+.page {
+    margin: 15px 0;
+    padding: 0;
+    float: right;
+}
+.page li {
+    list-style: none;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+}
+.page li input{
+    padding: 3px 5px;
+    height: 100%;
+    width: 50px;
+    border: none;
+    background-color: #EAEEF1;
+    text-align: center;
+    margin-right: 10px;
+}
+.page li span {
+    margin-right: 15px;
+}
+.page li a {
+    text-decoration: none;
+    outline: none;
+    margin-right: 15px;
 }

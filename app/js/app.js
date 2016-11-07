@@ -45,11 +45,11 @@ App.run(["$rootScope", "$state", "$stateParams",  '$window', '$templateCache', f
         { img:'app/img/fc3d.png', name: '福彩3D', lotteryCode: 'fc3d'}
     ]
 
-    // $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
-    // $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
+    $rootScope.rootUrl = 'http://192.168.1.200/201609zhugecaipiao/backend/web/';
+    $rootScope.rootImgUrl = 'http://192.168.1.200/201609zhugecaipiao';
 
-    $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
-    $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
+    // $rootScope.rootUrl = 'http://zhugecaipiao.thinktorch.cn/backend/web/';
+    // $rootScope.rootImgUrl = 'http://zhugecaipiao.thinktorch.cn';
 
     // Uncomment this to disable template cache
     /*$rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -124,16 +124,9 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         title: '开奖详情',
         templateUrl: helper.basepath('lotteryDetails.html')
     })
-
-    .state('app.setLottery', {
-        url: '/setLottery',
-        title: '彩票配置',
-        templateUrl: helper.basepath('setLottery.html')
-    })
-
     .state('app.lotteryConfig', {
         url: '/lotteryConfig',
-        title: '开奖配置',
+        title: '彩票配置',
         templateUrl: helper.basepath('lotteryConfig.html')
     })
     .state('app.category', {
@@ -159,7 +152,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
     })
     .state('app.ad', {
         url: '/ad',
-        title: '广告',
+        title: '广告列表',
         templateUrl: helper.basepath('ad.html')
     })
     .state('app.userList', {
@@ -178,6 +171,13 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         title: '文章管理',
         templateUrl: helper.basepath('addArticle.html'),
         resolve: helper.resolveFor('jquery', 'editor', 'angularFileUpload') 
+    })
+
+    .state('app.addAd', {
+        url: '/addAd',
+        title: '广告管理',
+        templateUrl: helper.basepath('addAd.html'),
+        resolve: helper.resolveFor('jquery', 'angularFileUpload') 
     })
 
     .state('app.system', {
@@ -1215,6 +1215,35 @@ App.directive('selectLottery', function() { // 选择彩种
 })
 
 
+
+App.directive('selectAdPos', function() { // 选择广告位ID
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+            pos_id: '@posId',
+            default_pos_id: '=defaultPosId'
+        },
+        template: '<div dropdown="" class="btn-group" style="margin-left: 0;">'+
+                      '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
+                          '{{ pos_id ? pos_id : "site" }} '+
+                          '<span class="caret" style="color: #78A7DE"></span>'+
+                      '</button>'+
+                      '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
+                          '<li ng-repeat="p in default_pos_id"><a ng-click="getPosId(p)">{{ p }}</a>'+
+                          '</li>'+
+                      '</ul>'+
+                  '</div>',
+        controller: function($scope) {
+            $scope.getPosId = function(p) {
+                $scope.pos_id = p;
+            }
+        }
+                
+    }
+
+})
+
 App.directive('orderBy', function() { // 排序
     return {
         restrict: 'A',
@@ -1516,8 +1545,37 @@ App.directive('contenteditable', function() { // 集成wangEditor
 
 
 
+App.directive('paging', function() { // 分页
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+            totalPage: '@totalPage',
+            currentPage: '@currentPage'
+        },
+        templateUrl: 'app/views/partials/paging.html',
+        controller: function($scope) {
+            $scope.firstPage = function() {
+                $scope.currentPage = 1;
+            }
+            $scope.lastPage = function() {
+                $scope.currentPage = $scope.totalPage;
+            }
+            $scope.prePage = function() {
+                $scope.currentPage--;
+            }
+            $scope.nextPage = function() {
+                $scope.currentPage++;
+            }
+        }
+    };
+});
+
+
+
+
 // 封装http请求
-App.factory('ConnectApi', function($rootScope, $http) {
+App.factory('ConnectApi', function($rootScope, $http, $state) {
 
    return {
       start: function(method, url, param) {
@@ -1533,7 +1591,10 @@ App.factory('ConnectApi', function($rootScope, $http) {
 
       data: function(res) {
           if ( res.data.code != 200 ) {
-              console.log(res.data.msg);
+              if( res.data.code == 201 ) {
+                  $state.go('page.login');
+              }
+              alert(res.data.msg);
           }
           return res.data;
       }
@@ -1851,24 +1912,6 @@ App.controller('LotteryHistoryController', ["$scope", 'ConnectApi', '$state', 'P
 
 
 
-
-// 广告管理
-
-App.controller('AdController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
-
-    $scope.param = ParamTransmit.getParam();
-    $scope.param.p = 0;
-    
-    ConnectApi.start('post', 'admeta/index', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data;
-    });
-
-
-}]);
-
-
-
 // 签到配置
 
 App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', '$timeout', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, $timeout) {
@@ -1955,8 +1998,8 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
 
 
 
-// 设置彩票详情
-App.controller('setLotteryController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+// 彩票配置
+App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
 
     $scope.param = ParamTransmit.getParam();
 
@@ -2005,11 +2048,14 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     // 3 删除
 
     $scope.param = ParamTransmit.getParam();
+    $scope.param.p = 0;
+    $scope.currentPage = 2;
 
     var getFaqList = function() {
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data.mod_data;
+            $scope.totalpage = data.data.page_data.totalpage;
         });
     }
     
@@ -2110,3 +2156,118 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
 
 }]);
 
+
+
+
+// 广告列表
+
+App.controller('AdController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+
+    $scope.param = ParamTransmit.getParam();
+    $scope.param.p = 0;
+    var getAdList = function() {
+        ConnectApi.start('post', 'admeta/index', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+    
+    
+    getAdList();
+
+    $scope.ad = function(act, id) {
+        var actionType = act;
+        var ad_id = id;
+        switch(act) {
+            case 0:
+                ParamTransmit.setParam({ actionType });
+                $state.go('app.addAd');
+                break;
+            case 1: 
+                ParamTransmit.setParam({ ad_id, actionType });
+                $state.go('app.addAd');
+                break;
+            case 2: 
+                ParamTransmit.setParam({ ad_id, actionType });
+                $state.go('app.addAd');
+                break;
+            case 3: 
+                $scope.param = { ad_id };
+                ConnectApi.start('post', 'admeta/del', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    getAdList();
+                });
+                break;
+
+        }
+    }
+
+}]);
+
+
+
+// 广告管理
+App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', 'FileUploader', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, FileUploader) {
+
+    $scope.defaultPosId = ['site']; // 广告位ID 默认参数
+    $scope.param = ParamTransmit.getParam();
+
+    var uploader = $scope.uploader = new FileUploader({
+        url: ''+ $rootScope.rootUrl +'gd/upload'
+    })
+
+    uploader.onSuccessItem = function(response) {
+        $scope.pvwImg = response._xhr.response;
+    };
+
+    var isEditOrNew = function() { // 不管是在新增还是编辑状态 都启用这个方法
+
+        $scope.param.name = $scope.title;
+        $scope.param.pos_id = $scope.pos_id;
+        $scope.param.link = $scope.link;
+        $scope.param.img = $scope.pvwImg;
+        return $scope.param;
+    }
+
+    var getAdDetails = function() { // 获取广告详情
+        ConnectApi.start('post', 'admeta/getadmeta', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            $scope.name = $scope.data.name;
+            $scope.pos_id = $scope.data.pos_id;
+            $scope.link = $scope.data.link;
+            $scope.pvwImg = $scope.data.img;
+        });
+    }
+
+
+    switch($scope.param.actionType) {
+        case 0:
+            $scope.save = function() {
+                isEditOrNew();
+                ConnectApi.start('post', 'admeta/add', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    $state.go('app.ad');
+                });
+            }
+            break;
+        case 1: 
+            getAdDetails();
+            $scope.save = function() {
+                isEditOrNew();
+                ConnectApi.start('post', 'admeta/edit', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    $state.go('app.ad');
+                });
+            }
+            break;
+        case 2: 
+            getAdDetails();
+            break;
+    }
+
+
+}]);

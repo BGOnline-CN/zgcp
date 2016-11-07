@@ -1,0 +1,70 @@
+<div class="row" ng-controller="AddAdController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.ad">广告</a> > 
+            <span ng-show="param.actionType == 0">新增广告</span>
+            <span ng-show="param.actionType == 1">修改广告</span>
+            <span ng-show="param.actionType == 2">查看广告</span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+       <form name="articleForm" novalidate ng-submit="save()">
+           <div class="panel form-panel">
+                <p class="big-title" ng-show="param.actionType == 0">新增广告</p>
+                <p class="big-title" ng-show="param.actionType == 1">修改广告</p>
+                <p class="big-title" ng-show="param.actionType == 2">查看广告</p>
+                <div class="form-con-div">
+                    <p class="form-con-title">产品名称：</p>
+                    <input type="text" name="title" ng-model="name">
+                    <div class="error" ng-show="articleForm.title.$dirty && articleForm.title.$invalid">
+                        <small ng-show="articleForm.title.$error.required">必填</small>
+                    </div>
+                </div>
+                <div class="form-con-div">
+                    <p class="form-con-title">广告位ID：</p>
+                    <div select-ad-pos pos-id="{{ pos_id }}" default-pos-id="defaultPosId" ng-model="pos_id"></div>
+                </div>
+                <div class="form-con-div">
+                    <p class="form-con-title">链接地址：</p>
+                    <input type="url" name="url" ng-model="link">
+                    <div class="error" ng-show="articleForm.url.$dirty && articleForm.url.$invalid">
+                        <small ng-show="articleForm.url.$error.required">必填</small>
+                    </div>
+                </div>
+                <div class="form-con-div">
+                    <p class="form-con-title">生效时间：</p>
+                    <input type="text" name="time" ng-model="title">
+                    <div class="error" ng-show="articleForm.time.$dirty && articleForm.time.$invalid">
+                        <small ng-show="articleForm.time.$error.required">必填</small>
+                    </div>
+                </div>
+                <div class="form-con-div clearfix">
+                    <p class="form-con-title">广告图片：</p>
+                    <div class="col-xs-3" ng-show="pvwImg || param.actionType == 2">
+                        <div class="pvw-div">
+                            <img ng-src="{{ pvwImg }}" alt="预览图">
+                            <p ng-show="param.actionType == 0 || param.actionType == 1">
+                                <a href="" ng-click="pvwImg = ''">删除</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-xs-3" ng-show="param.actionType == 0 || param.actionType == 1">
+                        <div class="uploadImg-div">
+                            <input type="file" nv-file-select="" uploader="uploader" class="file-input">
+                            <span class="fa-stack fa-lg font">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <p>上传图片</p>
+                            <span class="tip">格式：jpg.png</span>
+                            <span class="tip">推荐尺寸：255*180</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 0">发布广告</button>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 1">确定修改</button>
+                <button type="button" class="btn btn-danger" ui-sref="app.ad" ng-show="param.actionType == 2">返回上一页</button>
+           </div>
+       </form>
+   </div>
+</div>
