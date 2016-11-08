@@ -1193,21 +1193,29 @@ App.directive('selectLottery', function() { // 选择彩种
     return {
         restrict: 'A',
         replace: true,
+        scope: {
+            lottery_name: '=lotteryName',
+            lotteryList: '=lotteryList'
+        },
         template: '<div dropdown="" class="btn-group">'+
-                      '<button type="button" dropdown-toggle="" class="btn btn-default select-btn"'+
-                                'ng-repeat="o in lotteryList" ng-if="lottery_code == o.lotteryCode">'+
-                                '{{o.name}} '+
+                      '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
+                          '{{ lottery_name }} '+
                           '<span class="caret" style="color: #78A7DE"></span>'+
                       '</button>'+
                       '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
-                          '<li ng-repeat="o in lotteryList"><a ng-click="">{{o.name}}</a>'+
+                          '<li ng-repeat="o in lotteryList"><a ng-click="getLotterCode(o.lotteryCode)">{{o.name}}</a>'+
                           '</li>'+
                       '</ul>'+
                   '</div>',
-        controller: function($scope, ParamTransmit) {
-            var lottery = ParamTransmit.getParam();
-            $scope.lottery_code = lottery.lottery_code;
-
+        controller: function($scope, ParamTransmit, ConnectApi) {
+            $scope.getLotterCode = function(lottery_code) {
+                ParamTransmit.setParam({ lottery_code });
+                $scope.param = ParamTransmit.getParam();
+                ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                });
+            }
         }
                 
     }
@@ -1353,14 +1361,13 @@ App.directive('issue', function() { // 期号标题
     return {
         restrict: 'A',
         replace: true,
+        scope: {
+            expect: '=expect',
+            lottery_name: '=lotteryName'
+        },
         template: '<div style="display: inline-block;">'+
-                      '<span ng-repeat="o in lotteryList" ng-if="lottery_code == o.lotteryCode">{{ o.name + " " + expect }}期</span>'+
-                  '</div>',
-        controller: function($rootScope, $scope, ParamTransmit) {
-            var lottery = ParamTransmit.getParam();
-            $scope.lottery_code = lottery.lottery_code;
-            $rootScope.expect = lottery.expect;
-        }
+                      '<span>{{ lottery_name }} {{ expect ? expect + "期" : return }}</span>'+
+                  '</div>'
                 
     }
 

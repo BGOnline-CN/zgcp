@@ -1,19 +1,21 @@
-<div class="title">
-    <a ui-sref="app.homePage">首页</a> > 
-    <span issue></span>
-</div>
 <div class="row" ng-controller="LotteryDetailsController">
+   <div class="col-xs-12">
+       <div class="title">
+          <a ui-sref="app.homePage">首页</a> > 
+          <span issue expect="data.expect" lottery-name="data.lottery_name"></span>
+       </div>
+   </div>
    <div class="col-xs-12">
          <table class="bgTable bg-white">
                <thead>
                      <tr>
                         <th style="width: 30%">
                             彩种
-                            <div select-lottery></div>
+                            <div select-lottery lottery-name="data.lottery_name" lottery-list="lotteryList"></div>
                         </th>
                         <th style="width: 70%">
                             期数
-                            <div lottery-issue></div>
+                            <div lottery-issue expect="expect"></div>
                         </th>
                      </tr>
                </thead>
