@@ -2059,7 +2059,7 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
 
 
 // 彩票配置
-App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', '$interval', function($scope, $sce, ConnectApi, $state, ParamTransmit, $interval) {
 
     $scope.param = ParamTransmit.getParam();
 
@@ -2097,6 +2097,18 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
 
     $scope.lotteryDetails = function(lottery_code, expect) {
         ParamTransmit.setParam({ lottery_code, expect });
+    }
+
+    
+    $scope.showTime = function(time) {
+        alert(1)
+        // var newTime;
+        // $interval(function() {
+        //     newTime = time / 60 + '分' + time / 3600 + '秒';
+        //     time--;
+        //     return newTime;
+        // }, 1000);
+        // return newTime;
     }
 
 }]);

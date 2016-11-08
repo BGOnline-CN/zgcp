@@ -41,7 +41,8 @@
                  </li>
                  <li style="width: 25%;">
                      <button class="btn btn-danger" style="border-radius: 30px;padding: 3px 16px;">
-                            手动开奖
+                            <span ng-bind="showTime()"></span>
+                            <!--<span ng-show="data.deadline < 1">手动开奖</span>-->
                      </button>
                  </li>
              </ul>
