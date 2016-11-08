@@ -1300,35 +1300,34 @@ App.directive('lotteryIssue', function() { // 输入期数查询
             var timeout;
             $scope.$watch('expect', function(newVal, oldVal) {
                 if (newVal !== oldVal) {
-                    $rootScope.isLoading = true;
                     if(timeout) $timeout.cancel(timeout);
                         timeout = $timeout(function() {
-                        $scope.param = lottery;
-                        $scope.param.expect = $scope.expect;
-                        ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
-                            var data = ConnectApi.data(response);
-                            $scope.data = data.data;
-                            if(!$scope.data) {
-                              $scope.isHaveData = false;
-                              $rootScope.isLoading = false;
-                            }else {
-                              $scope.isHaveData = true;
-                              $rootScope.isLoading = false;
-                              $scope.param.expect = $rootScope.expect = $scope.expect;
-                              ParamTransmit.setParam($scope.param);
-                            }
-                        });
+                            $rootScope.isLoading = true;
+                            $scope.param = lottery;
+                            $scope.param.expect = $scope.expect;
+                            ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
+                                var data = ConnectApi.data(response);
+                                $scope.data = data.data;
+                                if(!$scope.data) {
+                                    $scope.isHaveData = false;
+                                }else {
+                                    $scope.isHaveData = true;
+                                    $scope.param.expect = $rootScope.expect = $scope.expect;
+                                    ParamTransmit.setParam($scope.param);
+                                }
+                                $rootScope.isLoading = false;
+                            });
 
 
-                        // $scope.param = ParamTransmit.getParam();
-                        // $scope.param.token = sessionStorage.token;
-                        // $scope.param.p = 0;
-                        // $scope.param.status = 2;
+                            // $scope.param = ParamTransmit.getParam();
+                            // $scope.param.token = sessionStorage.token;
+                            // $scope.param.p = 0;
+                            // $scope.param.status = 2;
 
-                        // ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
-                        //     var data = ConnectApi.data(response);
-                        //     $scope.data = data.data.mod_data;
-                        // });
+                            // ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
+                            //     var data = ConnectApi.data(response);
+                            //     $scope.data = data.data.mod_data;
+                            // });
 
 
                     }, 800);
@@ -1697,7 +1696,7 @@ App.filter('to_trusted', ['$sce', function ($sce) { // html代码格式化
 
 
 // 参数传递
-App.factory('ParamTransmit', function($parse) {
+App.factory('ParamTransmit', function($parse, $state) {
 
    var saveParam = function(param) {
        sessionStorage.setItem('paramSession', JSON.stringify(param));
@@ -1891,6 +1890,8 @@ App.controller('WinningUserController', ["$scope", 'ConnectApi', '$state', 'Para
   
 }]);
 
+
+
 // 彩票列表
 
 App.controller('LotteryListController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
@@ -2038,6 +2039,7 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
                 getLotterySet();
             });
         }
+        
         $scope.isEdit = !$scope.isEdit;
     }
 
