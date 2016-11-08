@@ -11,7 +11,7 @@
     "nav": {
       "HOMEPAGE": "首页",
       "CATEGORY": "分类",
-      "COUPON": "点券", 
+      "COUPON": "点券（正在开发中）", 
       "ARTICLE": {
         "ARTICLE": "文章",
         "NEWS": "热门资讯",
@@ -20,7 +20,7 @@
       "AD": "广告", 
       "USERLIST": "用户列表",
       "CHECK-INS": "签到配置", 
-      "SYSTEM": "系统配置"
+      "SYSTEM": "系统配置（正在开发中）"
     }
   }
 }

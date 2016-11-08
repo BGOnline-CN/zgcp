@@ -10,11 +10,9 @@
     "translate": "sidebar.nav.CATEGORY"
   },
   { 
-    "这里是注释": {
-      "sref": "app.coupon",
-      "icon": "",
-      "translate": "sidebar.nav.COUPON"
-    }
+    "sref": "app.coupon",
+    "icon": "",
+    "translate": "sidebar.nav.COUPON"
   },
   {
     "sref": "#",

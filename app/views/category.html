@@ -1,5 +1,13 @@
-<div class="title">分类列表</div>
 <div class="row" ng-controller="CategoryController">
+   <div class="col-xs-12">
+      <div class="title">分类列表
+            <!--<span style="margin-left: 50px;">排序：</span>-->
+            <button class="btn btn-danger" style="border-radius: 30px;float: right;padding: 3px 16px;" ng-click="category(0, node.cat_id, node.parent_id)">
+                  <i class="fa fa-plus"></i>
+                  新建分类
+            </button>
+      </div>
+   </div>
    <div class="col-xs-12">
          <table class="bgTable bg-white">
                <thead>
@@ -22,9 +30,9 @@
                                     <div class="node-con">{{node.explain}}</div>
                                     <span category-type="{{ node.type }}" class="node-con"></span>
                                     <div class="node-con">
-                                          <a href="">编辑</a>
-                                          <a href="">删除</a>
-                                          <a href="">新增</a>
+                                          <a ng-click="category(1, node.cat_id, node.parent_id)" ng-show="node.parent_id != 0">编辑</a>
+                                          <a ng-click="category(3, node.cat_id, node.parent_id)" ng-show="node.parent_id != 0">删除</a>
+                                          <a ng-click="category(0, node.cat_id, node.parent_id)">新增</a>
                                     </div>
                               </div>
                            </td>

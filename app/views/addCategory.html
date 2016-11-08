@@ -1,0 +1,37 @@
+<div class="row" ng-controller="AddCategoryController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.category">分类管理</a> > 
+            <span ng-show="param.actionType == 0">新增分类</span>
+            <span ng-show="param.actionType == 1">编辑分类</span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+       <form name="articleForm" novalidate ng-submit="save()">
+           <div class="panel form-panel">
+                <p class="big-title" ng-show="param.actionType == 0">新增分类</p>
+                <p class="big-title" ng-show="param.actionType == 1">编辑分类</p>
+                <div class="form-con-div">
+                    <p class="form-con-title">类型选择：</p>
+                    <div select-category-type type-name="typeName" default-type="defaultType" type="type"></div>
+                </div>
+                <div class="form-con-div">
+                    <p class="form-con-title">分类名称：</p>
+                    <input type="text" name="title" ng-model="cat_name">
+                    <div class="error" ng-show="articleForm.title.$dirty && articleForm.title.$invalid">
+                        <small ng-show="articleForm.title.$error.required">必填</small>
+                    </div>
+                </div>
+                <div class="form-con-div">
+                    <p class="form-con-title">分类说明：</p>
+                    <input type="text" name="title" ng-model="explain">
+                    <div class="error" ng-show="articleForm.title.$dirty && articleForm.title.$invalid">
+                        <small ng-show="articleForm.title.$error.required">必填</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 0">新增分类</button>
+                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 1">确定修改</button>
+           </div>
+       </form>
+   </div>
+</div>

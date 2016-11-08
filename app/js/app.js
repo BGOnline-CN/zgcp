@@ -131,9 +131,14 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
     })
     .state('app.category', {
         url: '/category',
-        title: '分类',
+        title: '分类列表',
         templateUrl: helper.basepath('category.html'),
         resolve: helper.resolveFor('treeControl')   
+    })
+    .state('app.addCategory', {
+        url: '/addCategory',
+        title: '分类管理',
+        templateUrl: helper.basepath('addCategory.html')
     })
     .state('app.coupon', {
         url: '/coupon',
@@ -1280,6 +1285,42 @@ App.directive('selectAdPos', function() { // 选择广告位ID
 
 })
 
+
+
+App.directive('selectCategoryType', function() { // 分类类型选择
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+            typeName: '=typeName',
+            type: '=type',
+            defaultType: '=defaultType'
+        },
+        template: '<div dropdown="" class="btn-group" style="margin-left: 0;">'+
+                      '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
+                          '{{ typeName = typeName ? typeName : "商品" }} '+
+                          '<span class="caret" style="color: #78A7DE"></span>'+
+                      '</button>'+
+                      '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
+                          '<li ng-repeat="p in defaultType"><a ng-click="getType(p, $index+1)">{{ p }}</a>'+
+                          '</li>'+
+                      '</ul>'+
+                  '</div>',
+        controller: function($scope) {
+            $scope.type = 1;
+            $scope.getType = function(p, _index) {
+                $scope.typeName = p;
+                $scope.type = _index;
+            }
+        }
+                
+    }
+
+})
+
+
+
+
 App.directive('orderBy', function() { // 排序
     return {
         restrict: 'A',
@@ -1588,6 +1629,35 @@ App.directive('paging', function() { // 分页
 
 
 
+App.directive('timerBtn', function() { // 倒计时按钮
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+            startTime: '=startTime',
+            getData: '&getData'
+        },
+        template: '<button class="btn btn-danger" style="border-radius: 30px;padding: 3px 16px;" ng-disabled="startTime> 0" ng-bind="startTime > 0 ? showTime + \' 后开奖\' : \'手动开奖\'" ng-click="getData()"></button>',
+        controller: function($scope, $interval) {
+
+            var formatTime = function(second) {
+                return [parseInt(second / 60 / 60), parseInt(second / 60 % 60), second % 60].join(":")
+                    .replace(/\b(\d)\b/g, "0$1");
+            }
+            
+            var timer = $interval;
+            timer(function() {
+                $scope.startTime -= 1;
+                $scope.showTime = formatTime($scope.startTime);
+                if($scope.startTime < 1) timer.cancel(timer);
+            }, 1000)
+        }
+    };
+});
+
+
+
+
 // 封装http请求
 App.factory('ConnectApi', function($rootScope, $http, $state) {
 
@@ -1842,39 +1912,6 @@ App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi'
 
 
 
-// 分类管理
-
-App.controller('CategoryController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
-
-    $scope.param = ParamTransmit.getParam();
-
-    $scope.treeOptions = {
-        nodeChildren: "cateChild",
-        dirSelectable: true,
-        injectClasses: {
-            ul: "a1",
-            li: "a2",
-            liSelected: "a7",
-            iExpanded: "a3",
-            iCollapsed: "a4",
-            iLeaf: "a5",
-            label: "a6",
-            labelSelected: "a8"
-        }
-    }
-
-    ConnectApi.start('post', 'category/index', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data;
-        $scope.dataForTheTree = $scope.data;
-    });
-
-
-}]);
-
-
-
-
 // 用户列表
 
 App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
@@ -2059,7 +2096,7 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
 
 
 // 彩票配置
-App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', '$interval', function($scope, $sce, ConnectApi, $state, ParamTransmit, $interval) {
+App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
 
     $scope.param = ParamTransmit.getParam();
 
@@ -2099,16 +2136,13 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
         ParamTransmit.setParam({ lottery_code, expect });
     }
 
-    
-    $scope.showTime = function(time) {
-        alert(1)
-        // var newTime;
-        // $interval(function() {
-        //     newTime = time / 60 + '分' + time / 3600 + '秒';
-        //     time--;
-        //     return newTime;
-        // }, 1000);
-        // return newTime;
+    $scope.getData = function(t) {
+        $scope.param = ParamTransmit.getParam();
+        $scope.param.date = t;
+        ConnectApi.start('post', 'lottery/manual_lottery', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
     }
 
 }]);
@@ -2127,7 +2161,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     $scope.currentPage = 1;
     $scope.param = ParamTransmit.getParam();
     $scope.param.p = $scope.currentPage - 1;
-
+    $scope.param.cat_name = '热门资讯';
     var getFaqList = function() {
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2138,12 +2172,12 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     
     getFaqList();
 
-    $scope.article = function(act, id) {
+    $scope.article = function(act, name, id) {
         var actionType = act;
-        var cat_id = id, faq_id = id;
+        var cat_name = name, faq_id = id;
         switch(act) {
             case 0:
-                ParamTransmit.setParam({ cat_id, actionType });
+                ParamTransmit.setParam({ cat_name, actionType });
                 $state.go('app.addArticle');
                 break;
             case 1: 
@@ -2168,6 +2202,63 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     
 
 }]);
+
+
+
+// 攻略列表
+App.controller('StrategyController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+
+
+    // 0 新增
+    // 1 修改
+    // 2 查看
+    // 3 删除
+
+    $scope.currentPage = 1;
+    $scope.param = ParamTransmit.getParam();
+    $scope.param.p = $scope.currentPage - 1;
+    $scope.param.cat_name = '攻略';
+    var getFaqList = function() {
+        ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data.mod_data;
+            $scope.totalpage = data.data.page_data.totalpage;
+        });
+    }
+    
+    getFaqList();
+
+    $scope.article = function(act, name, id) {
+        var actionType = act;
+        var cat_name = name, faq_id = id;
+        switch(act) {
+            case 0:
+                ParamTransmit.setParam({ cat_name, actionType });
+                $state.go('app.addArticle');
+                break;
+            case 1: 
+                ParamTransmit.setParam({ faq_id, actionType });
+                $state.go('app.addArticle');
+                break;
+            case 2: 
+                ParamTransmit.setParam({ faq_id, actionType });
+                $state.go('app.addArticle');
+                break;
+            case 3: 
+                $scope.param = { faq_id };
+                ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    getFaqList();
+                });
+                break;
+
+        }
+    }
+    
+
+}]);
+
 
 
 // 文章管理
@@ -2462,4 +2553,123 @@ App.controller('AfterNoListController', ["$scope", '$rootScope', 'ConnectApi', '
     }
 
     getData();
+}]);
+
+
+
+// 分类列表
+
+App.controller('CategoryController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+
+    $scope.param = ParamTransmit.getParam();
+
+    $scope.treeOptions = {
+        nodeChildren: "cateChild",
+        dirSelectable: true,
+        injectClasses: {
+            ul: "a1",
+            li: "a2",
+            liSelected: "a7",
+            iExpanded: "a3",
+            iCollapsed: "a4",
+            iLeaf: "a5",
+            label: "a6",
+            labelSelected: "a8"
+        }
+    }
+
+    // 0 新增
+    // 1 修改
+    // 3 删除
+
+    var getCategoryList = function() {
+        ConnectApi.start('post', 'category/index', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            $scope.dataForTheTree = $scope.data;
+        });
+    }
+    
+    getCategoryList();
+
+    $scope.category = function(act, id, pid) {
+        var actionType = act;
+        var cat_id = id, parent_id = pid;
+        switch(act) {
+            case 0:
+                ParamTransmit.setParam({ parent_id, actionType });
+                $state.go('app.addCategory');
+                break;
+            case 1: 
+                ParamTransmit.setParam({ cat_id, parent_id, actionType });
+                $state.go('app.addCategory');
+                break;
+            case 3: 
+                $scope.param = { cat_id };
+                ConnectApi.start('post', 'category/del', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    getCategoryList();
+                });
+                break;
+
+        }
+    }
+
+
+}]);
+
+
+
+
+
+// 分类管理
+App.controller('AddCategoryController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+
+    $scope.defaultType = ["商品", "文章"]; // 分类类型 默认参数
+    $scope.param = ParamTransmit.getParam();
+
+    var isEditOrNew = function() { // 不管是在新增还是编辑状态 都启用这个方法
+        $scope.param.type = $scope.type;
+        $scope.param.cat_name = $scope.cat_name;
+        $scope.param.explain = $scope.explain;
+        return $scope.param;
+    }
+
+    var getFaqDetails = function() { // 获取分类详情
+        ConnectApi.start('post', 'faq/getfaq', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            $scope.type = $scope.data.type;
+            $scope.cat_name = $scope.data.cat_name;
+            $scope.explain = $scope.data.explain;
+        });
+    }
+
+
+    switch($scope.param.actionType) {
+        case 0:
+            $scope.save = function() {
+                isEditOrNew();
+                ConnectApi.start('post', 'category/add', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    $state.go('app.category');
+                });
+            }
+            break;
+        case 1: 
+            getFaqDetails();
+            $scope.save = function() {
+                isEditOrNew();
+                ConnectApi.start('post', 'category/edit', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.data = data.data;
+                    $state.go('app.category');
+                });
+            }
+            break;
+    }
+
+
 }]);

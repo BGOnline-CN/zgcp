@@ -13,7 +13,7 @@
                      <span ng-show="!isEdit">{{ data.is_open ? '是' : '否' }}</span>
                      <input type="checkbox" ng-model="data.is_open" ng-show="isEdit">
                  </li>
-                 <li style="width: 30%;">开奖时间：
+                 <li style="width: 35%;">开奖时间：
                      <span ng-show="!isEdit" ng-bind="data.lottery_time_explain"></span>
                      <input type="text" ng-model="data.lottery_time_explain" class="lotteryTime-input" ng-show="isEdit">
                  </li>
@@ -21,7 +21,7 @@
                      <span ng-show="!isEdit" ng-bind="data.stop_buying_time + ' 秒钟'"></span>
                      <div num-select num="data.stop_buying_time" ng-show="isEdit"></div>
                  </li>
-                 <li style="width: 25%;">
+                 <li style="width: 20%;">
                      <p style="float: right;"><a href="" ng-click="showEdit()" ng-show="!isEdit">修改</a></p>
                      <p style="float: right;"><a href="" ng-click="showEdit()" ng-show="isEdit">保存</a></p>
                  </li>
@@ -33,17 +33,14 @@
                  <li style="width: 20%;">期号：
                      <span ng-bind="data.next_expect"></span>
                  </li>
-                 <li style="width: 30%;">开奖时间：
+                 <li style="width: 35%;">开奖时间：
                      <span ng-bind="data.next_opentime | timeFilter"></span>
                  </li>
                  <li style="width: 25%;">状态：
-                     <span style="color: #7BB5F7;">待开</span>
+                     <span style="color: #7BB5F7;" ng-bind="data.deadline > 0 ? '待开' : '已开奖' "></span>
                  </li>
-                 <li style="width: 25%;">
-                     <button class="btn btn-danger" style="border-radius: 30px;padding: 3px 16px;">
-                            <span ng-bind="showTime()"></span>
-                            <!--<span ng-show="data.deadline < 1">手动开奖</span>-->
-                     </button>
+                 <li style="width: 20%;">
+                     <div timer-btn start-time="data.deadline" get-data="getData(data.next_opentime | date: 'yyyy-MM-dd')"></div>
                  </li>
              </ul>
              <table class="bgTable bg-white" style="margin-top: 50px;">
