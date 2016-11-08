@@ -2,12 +2,12 @@
    <div class="col-xs-12">
        <div class="title">
             <a ui-sref="app.homePage">首页</a> > 
-            <span issue></span>
+            <span issue expect="{{ data.expect }}" lottery-name="{{ data.lottery_name }}"></span>
        </div>
    </div>
    <div class="col-xs-12">
          <div class="panel panel-set">
-             <p class="p-title">双色球信息配置</p>
+             <p class="p-title" ng-bind="data.lottery_name + '信息配置'"></p>
              <ul class="panel-ul clearfix">
                  <li style="width: 20%;">是否可购买：
                      <span ng-show="!isEdit">{{ data.is_open ? '是' : '否' }}</span>
@@ -74,7 +74,7 @@
                                         <td ng-bind="d.opencode" style="color: #EA5A5A"></td>
                                         <td ng-bind="d.buy_score"></td>
                                         <td ng-bind="d.issue_score"></td>
-                                        <td><a href="">详情</a></td>
+                                        <td><a ui-sref="app.lotteryDetails" ng-click="lotteryDetails(d.lottery_code, d.expect)">详情</a></td>
                                     </tr>
                                 </tbody>
                             </table>

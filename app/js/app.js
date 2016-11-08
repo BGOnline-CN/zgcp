@@ -1194,8 +1194,9 @@ App.directive('selectLottery', function() { // 选择彩种
         restrict: 'A',
         replace: true,
         scope: {
-            lottery_name: '=lotteryName',
-            lotteryList: '=lotteryList'
+            lottery_name: '@lotteryName',
+            lotteryList: '=lotteryList',
+            getData: '&getData'
         },
         template: '<div dropdown="" class="btn-group">'+
                       '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
@@ -1203,18 +1204,13 @@ App.directive('selectLottery', function() { // 选择彩种
                           '<span class="caret" style="color: #78A7DE"></span>'+
                       '</button>'+
                       '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
-                          '<li ng-repeat="o in lotteryList"><a ng-click="getLotterCode(o.lotteryCode)">{{o.name}}</a>'+
+                          '<li ng-repeat="o in lotteryList"><a ng-click="setLotterCode(o.lotteryCode); getData()">{{ o.name }}</a>'+
                           '</li>'+
                       '</ul>'+
                   '</div>',
-        controller: function($scope, ParamTransmit, ConnectApi) {
-            $scope.getLotterCode = function(lottery_code) {
+        controller: function($scope, ParamTransmit) {
+            $scope.setLotterCode = function(lottery_code) {
                 ParamTransmit.setParam({ lottery_code });
-                $scope.param = ParamTransmit.getParam();
-                ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
-                    $scope.data = data.data;
-                });
             }
         }
                 
@@ -1291,48 +1287,36 @@ App.directive('lotteryIssue', function() { // 输入期数查询
     return {
         restrict: 'A',
         replace: true,
+        scope: {
+            expect: '=expect'
+        },
         template: '<div style="display: inline-block;margin-left: 10px;vertical-align: middle;">'+
                       '<input type="text" class="form-control" style="display: inline-block;width: 70%;padding: 3px 12px;height: 28px;" ng-model="expect">'+
                   '</div>',
         controller: function($rootScope, $scope, ParamTransmit, ConnectApi, $timeout) {
-            var lottery = ParamTransmit.getParam();
-            $scope.expect = lottery.expect;
-            var timeout;
-            $scope.$watch('expect', function(newVal, oldVal) {
-                if (newVal !== oldVal) {
-                    if(timeout) $timeout.cancel(timeout);
-                        timeout = $timeout(function() {
-                            $rootScope.isLoading = true;
-                            $scope.param = lottery;
-                            $scope.param.expect = $scope.expect;
-                            ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
-                                var data = ConnectApi.data(response);
-                                $scope.data = data.data;
-                                if(!$scope.data) {
-                                    $scope.isHaveData = false;
-                                }else {
-                                    $scope.isHaveData = true;
-                                    $scope.param.expect = $rootScope.expect = $scope.expect;
-                                    ParamTransmit.setParam($scope.param);
-                                }
-                                $rootScope.isLoading = false;
-                            });
-
-
-                            // $scope.param = ParamTransmit.getParam();
-                            // $scope.param.token = sessionStorage.token;
-                            // $scope.param.p = 0;
-                            // $scope.param.status = 2;
-
-                            // ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
-                            //     var data = ConnectApi.data(response);
-                            //     $scope.data = data.data.mod_data;
-                            // });
-
-
-                    }, 800);
-                }
-            })
+            
+            // var timeout;
+            // $scope.$watch('expect', function(newVal, oldVal) {
+            //     if (newVal !== oldVal) {
+            //         if(timeout) $timeout.cancel(timeout);
+            //             timeout = $timeout(function() {
+            //                 $scope.param = ParamTransmit.getParam();
+            //                 $scope.param.expect = $scope.expect;
+            //                 ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
+            //                     $rootScope.isLoading = true;
+            //                     var data = ConnectApi.data(response);
+            //                     $scope.data = data.data;
+            //                     if(!$scope.data) {
+            //                         $scope.isHaveData = false;
+            //                     }else {
+            //                         $scope.isHaveData = true;
+            //                         ParamTransmit.setParam($scope.param);
+            //                     }
+            //                     $rootScope.isLoading = false;
+            //                 });
+            //         }, 800);
+            //     }
+            // })
         }
     }
 })
@@ -1361,8 +1345,8 @@ App.directive('issue', function() { // 期号标题
         restrict: 'A',
         replace: true,
         scope: {
-            expect: '=expect',
-            lottery_name: '=lotteryName'
+            expect: '@expect',
+            lottery_name: '@lotteryName'
         },
         template: '<div style="display: inline-block;">'+
                       '<span>{{ lottery_name }} {{ expect ? expect + "期" : return }}</span>'+
@@ -1806,13 +1790,17 @@ App.controller('LotteryNoticeController', ["$scope", 'ConnectApi', '$state', 'Pa
 
 App.controller('LotteryDetailsController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
 
-    $scope.param = ParamTransmit.getParam();
 
     $scope.isHaveData = true;
-    ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data;
-    });
+    $scope.getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+    
+    $scope.getData();
 
 }]);
 
@@ -2041,6 +2029,10 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
         }
         
         $scope.isEdit = !$scope.isEdit;
+    }
+
+    $scope.lotteryDetails = function(lottery_code, expect) {
+        ParamTransmit.setParam({ lottery_code, expect });
     }
 
 }]);
