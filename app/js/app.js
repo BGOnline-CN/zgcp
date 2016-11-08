@@ -177,7 +177,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         url: '/addAd',
         title: '广告管理',
         templateUrl: helper.basepath('addAd.html'),
-        resolve: helper.resolveFor('jquery', 'angularFileUpload') 
+        resolve: helper.resolveFor('jquery', 'angularFileUpload', 'datepicker') 
     })
 
     .state('app.system', {
@@ -191,7 +191,35 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         title: '开奖历史',
         templateUrl: helper.basepath('lotteryHistory.html')
     })
-    
+
+    .state('app.userOrder', {
+        url: '/userOrder',
+        title: '订单查询',
+        templateUrl: helper.basepath('userOrder.html')
+    })
+    .state('app.fundsList', {
+        url: '/fundsList',
+        title: '资金明细',
+        templateUrl: helper.basepath('fundsList.html')
+    })
+    .state('app.checkInsList', {
+        url: '/checkInsList',
+        title: '签到记录',
+        templateUrl: helper.basepath('checkInsList.html')
+    })
+    .state('app.shareList', {
+        url: '/shareList',
+        title: '分享详情',
+        templateUrl: helper.basepath('shareList.html')
+    })
+    .state('app.afterNoList', {
+        url: '/afterNoList',
+        title: '追号记录',
+        templateUrl: helper.basepath('afterNoList.html')
+    })
+
+
+
     // page
     .state('page', {
         url: '/page',
@@ -320,7 +348,11 @@ App
                              'vendor/simple-line-icons/css/simple-line-icons.css'],
       'jquery':             ['vendor/jquery/jquery-1.10.2.min.js'],
       'editor':             ['vendor/editor/dist/css/wangEditor.min.css', 
-                             'vendor/editor/dist/js/wangEditor.min.js']
+                             'vendor/editor/dist/js/wangEditor.min.js'],
+      'datepicker':         ['vendor/datepicker/css/foundation-datepicker.css',
+                             'vendor/datepicker/js/foundation-datepicker.js',
+                             'vendor/datepicker/js/locales/foundation-datepicker.zh-CN.js']
+
     },
     // Angular based script (use the right module name)
     modules: [
@@ -1225,12 +1257,12 @@ App.directive('selectAdPos', function() { // 选择广告位ID
         restrict: 'A',
         replace: true,
         scope: {
-            pos_id: '@posId',
+            pos_id: '=posId',
             default_pos_id: '=defaultPosId'
         },
         template: '<div dropdown="" class="btn-group" style="margin-left: 0;">'+
                       '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
-                          '{{ pos_id ? pos_id : "site" }} '+
+                          '{{ pos_id = pos_id ? pos_id : "site" }} '+
                           '<span class="caret" style="color: #78A7DE"></span>'+
                       '</button>'+
                       '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
@@ -1288,35 +1320,27 @@ App.directive('lotteryIssue', function() { // 输入期数查询
         restrict: 'A',
         replace: true,
         scope: {
-            expect: '=expect'
+            expect: '@expect',
+            getData: '&getData'
         },
         template: '<div style="display: inline-block;margin-left: 10px;vertical-align: middle;">'+
                       '<input type="text" class="form-control" style="display: inline-block;width: 70%;padding: 3px 12px;height: 28px;" ng-model="expect">'+
                   '</div>',
-        controller: function($rootScope, $scope, ParamTransmit, ConnectApi, $timeout) {
+        controller: function($scope, $rootScope, ParamTransmit, $timeout) {
             
-            // var timeout;
-            // $scope.$watch('expect', function(newVal, oldVal) {
-            //     if (newVal !== oldVal) {
-            //         if(timeout) $timeout.cancel(timeout);
-            //             timeout = $timeout(function() {
-            //                 $scope.param = ParamTransmit.getParam();
-            //                 $scope.param.expect = $scope.expect;
-            //                 ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
-            //                     $rootScope.isLoading = true;
-            //                     var data = ConnectApi.data(response);
-            //                     $scope.data = data.data;
-            //                     if(!$scope.data) {
-            //                         $scope.isHaveData = false;
-            //                     }else {
-            //                         $scope.isHaveData = true;
-            //                         ParamTransmit.setParam($scope.param);
-            //                     }
-            //                     $rootScope.isLoading = false;
-            //                 });
-            //         }, 800);
-            //     }
-            // })
+            var timeout;
+            $scope.$watch('expect', function(newVal, oldVal) {
+                $scope.param = ParamTransmit.getParam();
+                if (newVal !== oldVal && oldVal != '') {
+                    if(timeout) $timeout.cancel(timeout);
+                    timeout = $timeout(function() {
+                        $scope.param.expect = $scope.expect;
+                        ParamTransmit.setParam($scope.param)
+                        $rootScope.isLoading = true;
+                        $scope.getData();
+                    }, 800);
+                }
+            })
         }
     }
 })
@@ -1570,9 +1594,9 @@ App.factory('ConnectApi', function($rootScope, $http, $state) {
    return {
       start: function(method, url, param) {
           if(method === 'post') {
-              _http = $http.post(''+ $rootScope.rootUrl + url +'', param);
+              _http = $http.post('' + $rootScope.rootUrl + url + '', param);
           }else if(method === 'get') {
-              _http = $http.get(''+ $rootScope.rootUrl + url +'', param);
+              _http = $http.get('' + $rootScope.rootUrl + url + '', param);
           }else {
               console.log('连接方式传入错误！');
           }
@@ -1788,7 +1812,7 @@ App.controller('LotteryNoticeController', ["$scope", 'ConnectApi', '$state', 'Pa
 
 // 开奖详情
 
-App.controller('LotteryDetailsController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
+App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
 
     $scope.isHaveData = true;
@@ -1797,9 +1821,20 @@ App.controller('LotteryDetailsController', ["$scope", 'ConnectApi', '$state', 'P
         ConnectApi.start('post', 'lottery/lottery_results', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
+            if(!$scope.data) {
+                $scope.isHaveData = false;
+            }else {
+                $scope.isHaveData = true;
+                $scope.param = {
+                    expect: $scope.data.expect,
+                    lottery_code: $scope.data.lottery_code
+                };
+                ParamTransmit.setParam($scope.param);
+            }
+            $rootScope.isLoading = false;
         });
     }
-    
+
     $scope.getData();
 
 }]);
@@ -1846,11 +1881,37 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
 
     $scope.param = ParamTransmit.getParam();
     $scope.param.p = 0;
-    
+
     ConnectApi.start('post', 'member/index', $scope.param).then(function(response) {
         var data = ConnectApi.data(response);
         $scope.data = data.data.mod_data;
     });
+
+    // 0 订单查询
+    // 1 资金明细
+    // 2 签到记录
+    // 3 分享详情
+    // 4 追号记录
+    $scope.action = function(actionType, user_id) {
+        ParamTransmit.setParam({ user_id });
+        switch(actionType) {
+            case 0:
+                $state.go('app.userOrder');
+                break;
+            case 1: 
+                $state.go('app.fundsList');
+                break;
+            case 2:
+                $state.go('app.checkInsList');
+                break;
+            case 3:
+                $state.go('app.shareList');
+                break;
+            case 4:
+                $state.go('app.afterNoList');
+                break;
+        }
+    }
   
 }]);
 
@@ -1873,7 +1934,7 @@ App.controller('WinningUserController', ["$scope", 'ConnectApi', '$state', 'Para
 
     ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
         var data = ConnectApi.data(response);
-        $scope.data = data.data.mod_data;
+        $scope.wData = data.data.mod_data;
     });
   
 }]);
@@ -1896,13 +1957,16 @@ App.controller('LotteryListController', ["$scope", 'ConnectApi', '$state', 'Para
 
 App.controller('LotteryHistoryController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
 
-    $scope.param = ParamTransmit.getParam();
-    $scope.param.p = 0;
+    $scope.getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        $scope.param.p = 0;
+        ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
 
-    ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data.mod_data;
-    });
+    $scope.getData();
 
 }]);
 
@@ -2048,9 +2112,9 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     // 2 查看
     // 3 删除
 
+    $scope.currentPage = 1;
     $scope.param = ParamTransmit.getParam();
-    $scope.param.p = 0;
-    $scope.currentPage = 2;
+    $scope.param.p = $scope.currentPage - 1;
 
     var getFaqList = function() {
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
@@ -2211,6 +2275,40 @@ App.controller('AdController', ["$scope", '$sce', 'ConnectApi', '$state', 'Param
 // 广告管理
 App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', 'FileUploader', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, FileUploader) {
 
+    var nowTemp = new Date();
+    var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+    var checkin = $('#dpd1').fdatepicker({
+        format: 'yyyy-mm-dd',
+        onRender: function (date) {
+            return date.valueOf() < now.valueOf() ? 'disabled' : '';
+        }
+    }).on('changeDate', function (ev) {
+        if (ev.date.valueOf() > checkout.date.valueOf()) {
+            var newDate = new Date(ev.date)
+            newDate.setDate(newDate.getDate() + 1);
+            checkout.update(newDate);
+        }
+        checkin.hide();
+        $('#dpd2')[0].focus();
+    }).data('datepicker');
+    var checkout = $('#dpd2').fdatepicker({
+        format: 'yyyy-mm-dd',
+        onRender: function (date) {
+            return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+        }
+    }).on('changeDate', function (ev) {
+        checkout.hide();
+    }).data('datepicker');
+
+    var add0 = function(m) { return m < 10 ? '0' + m : m }
+    var formatDate = function(t) { // 格式化时间戳
+        var now = new Date(t);
+        var year = now.getFullYear(); 
+        var month = now.getMonth() + 1; 
+        var day = now.getDate();
+        return year + "-" + add0(month) + "-" + add0(day); 
+    } 
+
     $scope.defaultPosId = ['site']; // 广告位ID 默认参数
     $scope.param = ParamTransmit.getParam();
 
@@ -2224,9 +2322,11 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
 
     var isEditOrNew = function() { // 不管是在新增还是编辑状态 都启用这个方法
 
-        $scope.param.name = $scope.title;
+        $scope.param.name = $scope.name;
         $scope.param.pos_id = $scope.pos_id;
         $scope.param.link = $scope.link;
+        $scope.param.begin_time = $('#dpd1').val();
+        $scope.param.end_time = $('#dpd2').val();
         $scope.param.img = $scope.pvwImg;
         return $scope.param;
     }
@@ -2238,6 +2338,10 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
             $scope.name = $scope.data.name;
             $scope.pos_id = $scope.data.pos_id;
             $scope.link = $scope.data.link;
+            var bging_time = parseInt($scope.data.begin_time) * 1000;
+            var end_time = parseInt($scope.data.end_time) * 1000;
+            $('#dpd1').val(formatDate(bging_time));
+            $('#dpd2').val(formatDate(end_time));
             $scope.pvwImg = $scope.data.img;
         });
     }
@@ -2271,4 +2375,79 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
     }
 
 
+}]);
+
+
+
+// 用户订单
+App.controller('UserOrderController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    var getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'member/order_list', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    getData();
+}]);
+
+
+
+// 资金明细
+App.controller('FundsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    var getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'member/scorelog', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    getData();
+}]);
+
+
+
+// 签到记录
+App.controller('CheckInsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    var getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'member/signlog', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    getData();
+}]);
+
+
+
+// 分享详情
+App.controller('ShareListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    var getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'member/sharelog', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    getData();
+}]);
+
+
+
+// 追号记录
+App.controller('AfterNoListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    var getData = function() {
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'member/chase_list', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    getData();
 }]);

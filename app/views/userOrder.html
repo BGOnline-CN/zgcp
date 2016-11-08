@@ -1,0 +1,45 @@
+<div class="row" ng-controller="UserOrderController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.userList">用户列表</a> > 
+            <span  class="title" ng-bind="data.userInfo.nickname + ' 订单明细'"></span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>订单号</th>
+                           <th>所购彩票</th>
+                           <th>期号</th>
+                           <th>玩法</th>
+                           <th>自选号码</th>
+                           <th>支付方式</th>
+                           <th>状态</th>
+                           <th>日期</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data.mod_data">
+                           <td ng-bind="d.order_sn"></td>
+                           <td ng-bind="d.lottery_name"></td>
+                           <td ng-bind="d.expect"></td>
+                           <td ng-bind="d.game_name">
+
+                               <!--<ol style="margin: 0;padding: 0;">
+                                   <li ng-repeat="dl in d.level_bonus" style="list-style: none;">
+                                       <span style="display: block;" ng-repeat="dll in dl" ng-bind="dll.award_grades + ' 中 ' + dll.number + ' 注 单注奖金 ' + dll.score + '元  共' + dll.number * dll.score + '元'"></span>
+                                   </li>
+                               </ol>-->
+                           </td>
+                           <td>
+                               <p ng-repeat="db in d.buy_code" ng-bind="db + ' 中 ' + d.number + ' 注 单注奖金 ' + d.score + '元  共' + d.number * d.score + '元'"></p>
+                           </td>
+                           <td ng-bind="d.pay_type"></td>
+                           <td ng-bind="d.status"></td>
+                           <td ng-bind="d.add_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

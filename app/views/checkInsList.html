@@ -1,0 +1,22 @@
+<div class="row" ng-controller="CheckInsListController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.userList">用户列表</a> > 
+            <span  class="title" ng-bind="data.userInfo.nickname + ' 签到记录'"></span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>签到时间</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data.mod_data">
+                           <td ng-bind="d.sign_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

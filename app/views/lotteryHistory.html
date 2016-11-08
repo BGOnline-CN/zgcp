@@ -2,9 +2,9 @@
    <div class="col-xs-12">
          <div class="title">
             <a ui-sref="app.homePage">首页</a> > 
-            <span issue></span>
+            <span issue expect="{{ data.lottery_data.expect }}" lottery-name="{{ data.lottery_data.lottery_name }}"></span>
             <span style="margin-left: 50px;">彩种：</span>
-            <div select-lottery></div>
+            <div select-lottery lottery-name="{{ data.lottery_data.lottery_name }}" lottery-list="lotteryList" get-data="getData()"></div>
          </div>
    </div>
    <div class="col-xs-12">
@@ -21,7 +21,7 @@
                      </tr>
                </thead>
                <tbody>
-                     <tr ng-repeat="d in data">
+                     <tr ng-repeat="d in data.mod_data">
                            <td ng-bind="d.record_id"></td>
                            <td ng-bind="d.expect"></td>
                            <td ng-bind="d.opentime * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>

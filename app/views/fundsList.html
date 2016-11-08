@@ -1,0 +1,32 @@
+<div class="row" ng-controller="FundsListController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.userList">用户列表</a> > 
+            <span  class="title" ng-bind="data.userInfo.nickname + ' 资金明细'"></span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>记录ID</th>
+                           <th>操作日志</th>
+                           <th>消费彩金</th>
+                           <th>剩余彩金</th>
+                           <th>状态</th>
+                           <th>日期</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data.mod_data">
+                           <td ng-bind="d.log_id"></td>
+                           <td ng-bind="d.msg"></td>
+                           <td ng-bind="d.score"></td>
+                           <td ng-bind="d.surplus_score"></td>
+                           <td ng-bind="d.type"></td>
+                           <td ng-bind="d.add_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>

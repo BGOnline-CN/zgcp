@@ -32,7 +32,13 @@
                            <td ng-bind="d.city"></td>
                            <td><span is-locked="{{ d.is_locked }}"></span></td>
                            <td>{{ d.login_time * 1000 | date:'yyyy-MM-dd hh:mm' }}</td>
-                           <td>暂无</td>
+                           <td>
+                                 <a href="" title="订单查询" ng-click="action(0, d.user_id)">订</a>
+                                 <a href="" title="资金明细" ng-click="action(1, d.user_id)">资</a>
+                                 <a href="" title="签到记录" ng-click="action(2, d.user_id)">签</a>
+                                 <a href="" title="分享详情" ng-click="action(3, d.user_id)">分</a>
+                                 <a href="" title="追号记录" ng-click="action(4, d.user_id)">追</a>
+                           </td>
                      </tr>
                </tbody>
          </table>

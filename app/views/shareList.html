@@ -1,0 +1,26 @@
+<div class="row" ng-controller="ShareListController">
+   <div class="col-xs-12">
+       <div class="title">
+            <a ui-sref="app.userList">用户列表</a> > 
+            <span  class="title" ng-bind="data.userInfo.nickname + ' 分享详情'"></span>
+       </div>
+   </div>
+   <div class="col-xs-12">
+         <table class="bgTable bg-white">
+               <thead>
+                     <tr>
+                           <th>分享方式</th>
+                           <th>分享内容</th>
+                           <th>分享时间</th>
+                     </tr>
+               </thead>
+               <tbody>
+                     <tr ng-repeat="d in data.mod_data">
+                           <td ng-bind="d.share_type"></td>
+                           <td ng-bind="d.content"></td>
+                           <td ng-bind="d.share_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>      
+                     </tr>
+               </tbody>
+         </table>
+   </div>
+</div>
