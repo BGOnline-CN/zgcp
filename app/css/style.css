@@ -433,3 +433,42 @@ div.title {
 #dpd1, #dpd2 {
     width: 150px;
 }
+
+.login-box {
+    width: 300px;
+    margin: 180px auto;
+    border-radius: 10px;
+    background-color: #fff;
+    border: 1px solid #EBEFF1;
+    /*position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);*/
+}
+.login-box .login-name {
+    padding: 15px 0;
+    margin: 0;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    color: #fff;
+    background-color: #1E1D25;
+    font-size: 1.6em;
+}
+.login-box .login-start {
+    padding: 30px;
+}
+.login-box .login-start form input{
+    width: 100%;
+    border: none;
+    padding: 6px 12px;
+    background-color: #F5F7FA;
+    margin: 5px 0;  
+}
+.login-box .login-start form button {
+    margin-top: 15px;
+    width: 100%;
+    float: right;
+}

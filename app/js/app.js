@@ -1377,9 +1377,11 @@ App.directive('lotteryIssue', function() { // 输入期数查询
             var timeout;
             $scope.$watch('expect', function(newVal, oldVal) {
                 if (newVal !== oldVal && oldVal != '') {
+                    var param = ParamTransmit.getParam();
                     if(timeout) $timeout.cancel(timeout);
                     timeout = $timeout(function() {
-                        ParamTransmit.setParam({ expect: $scope.expect})
+                        param.expect = $scope.expect;
+                        ParamTransmit.setParam(param);
                         $rootScope.isLoading = true;
                         $scope.getData();
                     }, 800);
@@ -1683,7 +1685,10 @@ App.directive('timerBtn', function() { // 倒计时按钮
             timer(function() {
                 $scope.startTime -= 1;
                 $scope.showTime = formatTime($scope.startTime);
-                if($scope.startTime < 1) timer.cancel(timer);
+                if($scope.startTime < 1) {
+                    timer.cancel(timer);
+                    $scope.getData();
+                };
             }, 1000)
         }
     };
@@ -1867,11 +1872,6 @@ App.factory('ParamTransmit', function($parse, $state) {
 
 App.controller('LoginController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
 
-    $scope.param = {
-      username: 'admin',
-      password: 'admin'
-    }
-    
     ParamTransmit.clearParam();
 
     $scope.go = function() {
@@ -1890,30 +1890,6 @@ App.controller('LoginController', ["$scope", 'ConnectApi', '$state', 'ParamTrans
 
 
 
-// 开奖公告 
-
-App.controller('LotteryNoticeController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
-
-    $scope.param = ParamTransmit.getParam();
-
-    ConnectApi.start('post', 'lottery/newest_record', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data;
-    });
-
-    $scope.lotteryDetails = function(lottery_code, expect) {
-        ParamTransmit.setParam({ lottery_code, expect });
-    }
-
-    $scope.goLotteryHistory = function(lottery_code) {
-        ParamTransmit.setParam({ lottery_code });
-    }
-
-}]);
-
-
-
-
 // 开奖详情
 
 App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
@@ -1928,6 +1904,7 @@ App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi'
             if(!$scope.data) {
                 $scope.isHaveData = false;
             }else {
+                $rootScope.winner();
                 $scope.isHaveData = true;
                 $scope.param = {
                     expect: $scope.data.expect,
@@ -1992,22 +1969,44 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
 
 // 中奖用户
 
-App.controller('WinningUserController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
+App.controller('WinningUserController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
     // p 分页
     // lottery_code 彩票代码
     // expect 期数
     // status ==2为中奖用户，不填为全部购彩用户
-    
-    $scope.param = ParamTransmit.getParam();
-    $scope.param.p = 0;
-    $scope.param.status = 2;
+    $rootScope.winner = function() {
+        $scope.param = ParamTransmit.getParam();
+        $scope.param.p = 0;
+        $scope.param.status = 2;
+        ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.wData = data.data.mod_data;
+        });
+    }
+}]);
 
-    ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
+
+
+// 开奖公告 
+
+App.controller('LotteryNoticeController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
+
+    $scope.param = ParamTransmit.getParam();
+
+    ConnectApi.start('post', 'lottery/newest_record', $scope.param).then(function(response) {
         var data = ConnectApi.data(response);
-        $scope.wData = data.data.mod_data;
+        $scope.data = data.data;
     });
-  
+
+    $scope.lotteryDetails = function(lottery_code, expect) {
+        ParamTransmit.setParam({ lottery_code, expect });
+    }
+
+    $scope.goLotteryHistory = function(lottery_code) {
+        ParamTransmit.setParam({ lottery_code });
+    }
+
 }]);
 
 
@@ -2024,7 +2023,7 @@ App.controller('LotteryListController', ["$scope", 'ConnectApi', '$state', 'Para
 
 
 // 彩票配置
-App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+App.controller('LotteryConfigController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit) {
 
     $scope.param = ParamTransmit.getParam();
 
@@ -2053,6 +2052,8 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
             $scope.param.lottery_time_explain = $scope.data.lottery_time_explain;
             $scope.param.is_open = $scope.data.is_open ? 0 : 1;
             ConnectApi.start('post', 'lottery/lottery_save', $scope.param).then(function(response) {
+                var data = ConnectApi.data(response);
+                $scope.data = data.data;
                 getLotterySet();
             });
         }
@@ -2071,10 +2072,7 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
             var data = ConnectApi.data(response);
             $scope.data = data.data;
             getLotterySet();
-            ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
-                var data = ConnectApi.data(response);
-                $scope.data = data.data;
-            });
+            $rootScope.getLotteryHistory();
         });
     }
 
@@ -2086,9 +2084,9 @@ App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$sta
 
 // 彩票历史
 
-App.controller('LotteryHistoryController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
+App.controller('LotteryHistoryController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
-    $scope.getData = function() {
+    $rootScope.getLotteryHistory = function() {
         $scope.param = ParamTransmit.getParam();
         $scope.param.p = 0;
         ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
@@ -2097,7 +2095,12 @@ App.controller('LotteryHistoryController', ["$scope", 'ConnectApi', '$state', 'P
         });
     }
 
-    $scope.getData();
+    $rootScope.getLotteryHistory();
+
+    $rootScope.goLotteryDetails = function(e, l) {
+        ParamTransmit.setParam({ expect: e, lottery_code: l });
+        $state.go("app.lotteryDetails");
+    }
 
 }]);
 

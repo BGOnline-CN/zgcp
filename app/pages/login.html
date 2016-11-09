@@ -1,7 +1,12 @@
 <div ng-controller="LoginController">
-    <form action="" name="loginForm">
-        用户名：<input type="text" name="username" ng-model="param.username">
-        密码：<input type="text" name="password" ng-model="param.password">
-        <input type="button" ng-click="go()" value="确认">
-    </form>
+    <div class="login-box">
+        <p class="login-name">欢迎登录诸葛彩票</p>
+        <div class="login-start clearfix">
+            <form action="" name="loginForm">
+                <input type="text" name="username" ng-model="param.username" placeholder="用户名">
+                <input type="password" name="password" ng-model="param.password" placeholder="密码">
+                <button type="button" class="btn btn-danger" ng-click="go()">登录</button>
+            </form>
+        </div>
+    </div>
 </div>

@@ -97,7 +97,7 @@
                                         <td ng-bind="d.order_id"></td>
                                         <td ng-bind="d.user_id"></td>
                                         <td>
-                                            <span style="display: block;" ng-repeat="db in d.buy_code" ng-bind="db"></span>
+                                            <span style="display: block;" ng-repeat="db in d.buy_code" ng-bind-html="db"></span>
                                         </td>
                                         <td ng-bind="d.multiples"></td>
                                         <td ng-bind="d.number"></td>

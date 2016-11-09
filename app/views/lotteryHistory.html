@@ -3,8 +3,9 @@
          <div class="title">
             <a ui-sref="app.homePage">首页</a> > 
             <span issue expect="{{ data.lottery_data.expect }}" lottery-name="{{ data.lottery_data.lottery_name }}"></span>
+            开奖记录
             <span style="margin-left: 50px;">彩种：</span>
-            <div select-lottery lottery-name="{{ data.lottery_data.lottery_name }}" lottery-list="lotteryList" get-data="getData()"></div>
+            <div select-lottery lottery-name="{{ data.lottery_data.lottery_name }}" lottery-list="lotteryList" get-data="getLotteryHistory()"></div>
          </div>
    </div>
    <div class="col-xs-12">
@@ -28,7 +29,7 @@
                            <td ng-bind="d.opencode"></td>
                            <td ng-bind="d.buy_score"></td>
                            <td ng-bind="d.issue_score"></td>
-                           <td><a href="">详情</a></td>
+                           <td><a ng-click="goLotteryDetails(d.expect, data.lottery_data.lottery_code)">详情</a></td>
                      </tr>
                </tbody>
          </table>
