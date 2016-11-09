@@ -1712,13 +1712,14 @@ App.factory('ConnectApi', function($rootScope, $http, $state) {
           return _http;
       },
 
-      data: function(res) {
-          if ( res.data.code != 200 ) {
+      data: function(res, route) {
+          if( res.data.code != 200 ) {
               if( res.data.code == 201 ) {
                   $state.go('page.login');
               }
               alert(res.data.msg);
-          }
+          }else if(route) $state.go(route);
+
           return res.data;
       }
     
@@ -2446,9 +2447,8 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
             $scope.save = function() {
                 isEditOrNew();
                 ConnectApi.start('post', 'admeta/add', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
+                    var data = ConnectApi.data(response, 'app.ad');
                     $scope.data = data.data;
-                    $state.go('app.ad');
                 });
             }
             break;
