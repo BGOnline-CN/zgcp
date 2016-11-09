@@ -4,10 +4,12 @@
     "icon": "",
     "translate": "sidebar.nav.HOMEPAGE"
   },
-  {
-    "sref": "app.category",
-    "icon": "",
-    "translate": "sidebar.nav.CATEGORY"
+  { 
+    "我是一行注释": {
+      "sref": "app.category",
+      "icon": "",
+      "translate": "sidebar.nav.CATEGORY"
+    }
   },
   { 
     "sref": "app.coupon",
@@ -20,10 +22,12 @@
     "submenu": [
       {
         "sref": "app.news", 
+        "text": "热门资讯",
         "translate": "sidebar.nav.ARTICLE.NEWS" 
       },
       {
         "sref": "app.strategy",
+        "text": "攻略",
         "translate": "sidebar.nav.ARTICLE.STRATEGY"
       }    
     ],

@@ -496,8 +496,8 @@ App.controller('AppController',
  * Handle sidebar collapsible elements
  =========================================================*/
 
-App.controller('SidebarController', ['$rootScope', '$scope', '$state', '$http', '$timeout', 'Utils',
-  function($rootScope, $scope, $state, $http, $timeout, Utils){
+App.controller('SidebarController', ['$rootScope', '$scope', '$state', '$http', '$timeout', 'Utils', 'ParamTransmit',
+  function($rootScope, $scope, $state, $http, $timeout, Utils, ParamTransmit){
 
     var collapseList = [];
 
@@ -591,6 +591,11 @@ App.controller('SidebarController', ['$rootScope', '$scope', '$state', '$http', 
 
     function isChild($index) {
       return (typeof $index === 'string') && !($index.indexOf('-') < 0);
+    }
+
+    $scope.getMenuName = function(name) {
+        if(name == '攻略' || name == '热门资讯')
+        ParamTransmit.setParam({cat_name: name});
     }
 
 }]);
@@ -1371,14 +1376,43 @@ App.directive('lotteryIssue', function() { // 输入期数查询
             
             var timeout;
             $scope.$watch('expect', function(newVal, oldVal) {
-                $scope.param = ParamTransmit.getParam();
                 if (newVal !== oldVal && oldVal != '') {
                     if(timeout) $timeout.cancel(timeout);
                     timeout = $timeout(function() {
-                        $scope.param.expect = $scope.expect;
-                        ParamTransmit.setParam($scope.param)
+                        ParamTransmit.setParam({ expect: $scope.expect})
                         $rootScope.isLoading = true;
                         $scope.getData();
+                    }, 800);
+                }
+            })
+        }
+    }
+})
+
+
+
+App.directive('inputAutoSubmit', function() { // 输入框自动提交
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+            val: '=val',
+            key: '@key',
+            means: '&means'
+        },
+        template: '<div style="display: inline-block;margin-left: 10px;vertical-align: middle;">'+
+                      '<input type="text" class="form-control" style="display: inline-block;width: 70%;padding: 3px 12px;" ng-model="val">'+
+                  '</div>',
+        controller: function($scope, $rootScope, ParamTransmit, $timeout) {
+            
+            var timeout;
+            $scope.$watch('val', function(newVal, oldVal) {
+                if (newVal !== oldVal && oldVal != '') {
+                    if(timeout) $timeout.cancel(timeout);
+                    timeout = $timeout(function() {
+                        $rootScope.isLoading = true;
+                        ParamTransmit.setParam({ key: $scope.key, val: $scope.val })
+                        $scope.means();
                     }, 800);
                 }
             })
@@ -1989,6 +2023,66 @@ App.controller('LotteryListController', ["$scope", 'ConnectApi', '$state', 'Para
 }]);
 
 
+// 彩票配置
+App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
+
+    $scope.param = ParamTransmit.getParam();
+
+    var getLotterySet = function() {
+        ConnectApi.start('post', 'lottery/lottery_rule', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            switch($scope.data.is_open) {
+                case 0:
+                    $scope.data.is_open = true;
+                    break;
+                case 1: 
+                    $scope.data.is_open = false;
+                    break;
+            }
+        });
+    }
+    
+    getLotterySet();
+    
+    $scope.isEdit = false;
+
+    $scope.showEdit = function() {
+        if($scope.isEdit) {
+            $scope.param.stop_buying_time = $scope.data.stop_buying_time;
+            $scope.param.lottery_time_explain = $scope.data.lottery_time_explain;
+            $scope.param.is_open = $scope.data.is_open ? 0 : 1;
+            ConnectApi.start('post', 'lottery/lottery_save', $scope.param).then(function(response) {
+                getLotterySet();
+            });
+        }
+        
+        $scope.isEdit = !$scope.isEdit;
+    }
+
+    $scope.lotteryDetails = function(lottery_code, expect) {
+        ParamTransmit.setParam({ lottery_code, expect });
+    }
+
+    $scope.getData = function(t) {
+        $scope.param = ParamTransmit.getParam();
+        $scope.param.date = t;
+        ConnectApi.start('post', 'lottery/manual_lottery', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            getLotterySet();
+            ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
+                var data = ConnectApi.data(response);
+                $scope.data = data.data;
+            });
+        });
+    }
+
+}]);
+
+
+
+
 
 // 彩票历史
 
@@ -2095,59 +2189,6 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
 
 
 
-// 彩票配置
-App.controller('LotteryConfigController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
-
-    $scope.param = ParamTransmit.getParam();
-
-    var getLotterySet = function() {
-        ConnectApi.start('post', 'lottery/lottery_rule', $scope.param).then(function(response) {
-            var data = ConnectApi.data(response);
-            $scope.data = data.data;
-            switch($scope.data.is_open) {
-                case 0:
-                    $scope.data.is_open = true;
-                    break;
-                case 1: 
-                    $scope.data.is_open = false;
-                    break;
-            }
-        });
-    }
-    
-    getLotterySet();
-    
-    $scope.isEdit = false;
-
-    $scope.showEdit = function() {
-        if($scope.isEdit) {
-            $scope.param.stop_buying_time = $scope.data.stop_buying_time;
-            $scope.param.lottery_time_explain = $scope.data.lottery_time_explain;
-            $scope.param.is_open = $scope.data.is_open ? 0 : 1;
-            ConnectApi.start('post', 'lottery/lottery_save', $scope.param).then(function(response) {
-                getLotterySet();
-            });
-        }
-        
-        $scope.isEdit = !$scope.isEdit;
-    }
-
-    $scope.lotteryDetails = function(lottery_code, expect) {
-        ParamTransmit.setParam({ lottery_code, expect });
-    }
-
-    $scope.getData = function(t) {
-        $scope.param = ParamTransmit.getParam();
-        $scope.param.date = t;
-        ConnectApi.start('post', 'lottery/manual_lottery', $scope.param).then(function(response) {
-            var data = ConnectApi.data(response);
-            $scope.data = data.data;
-        });
-    }
-
-}]);
-
-
 
 // 文章列表
 App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
@@ -2161,7 +2202,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     $scope.currentPage = 1;
     $scope.param = ParamTransmit.getParam();
     $scope.param.p = $scope.currentPage - 1;
-    $scope.param.cat_name = '热门资讯';
+
     var getFaqList = function() {
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2203,61 +2244,6 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
 
 }]);
 
-
-
-// 攻略列表
-App.controller('StrategyController', ["$scope", '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $sce, ConnectApi, $state, ParamTransmit) {
-
-
-    // 0 新增
-    // 1 修改
-    // 2 查看
-    // 3 删除
-
-    $scope.currentPage = 1;
-    $scope.param = ParamTransmit.getParam();
-    $scope.param.p = $scope.currentPage - 1;
-    $scope.param.cat_name = '攻略';
-    var getFaqList = function() {
-        ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
-            var data = ConnectApi.data(response);
-            $scope.data = data.data.mod_data;
-            $scope.totalpage = data.data.page_data.totalpage;
-        });
-    }
-    
-    getFaqList();
-
-    $scope.article = function(act, name, id) {
-        var actionType = act;
-        var cat_name = name, faq_id = id;
-        switch(act) {
-            case 0:
-                ParamTransmit.setParam({ cat_name, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 1: 
-                ParamTransmit.setParam({ faq_id, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 2: 
-                ParamTransmit.setParam({ faq_id, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 3: 
-                $scope.param = { faq_id };
-                ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
-                    $scope.data = data.data;
-                    getFaqList();
-                });
-                break;
-
-        }
-    }
-    
-
-}]);
 
 
 
@@ -2301,7 +2287,8 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
                 ConnectApi.start('post', 'faq/add', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
-                    $state.go('app.news');
+                    if($scope.param.cat_name == '热门资讯') $state.go('app.news');
+                    if($scope.param.cat_name == '攻略') $state.go('app.strategy');
                 });
             }
             break;
@@ -2312,7 +2299,8 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
                 ConnectApi.start('post', 'faq/edit', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
                     $scope.data = data.data;
-                    $state.go('app.news');
+                    if($scope.param.cat_name == '热门资讯') $state.go('app.news');
+                    if($scope.param.cat_name == '攻略') $state.go('app.strategy');
                 });
             }
             break;
@@ -2669,6 +2657,33 @@ App.controller('AddCategoryController', ["$scope", '$rootScope', 'ConnectApi', '
                 });
             }
             break;
+    }
+
+
+}]);
+
+
+
+// 系统设置
+App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', function($scope, ConnectApi, ParamTransmit) {
+
+    var get = function() {
+        ConnectApi.start('post', 'settings/get_config', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    get();
+
+    $scope.set = function() { 
+        $scope.param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'settings/edit_config', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+            alert("修改成功！");
+            get();
+        });
     }
 
 

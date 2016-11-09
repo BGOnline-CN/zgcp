@@ -9,6 +9,7 @@
          <table class="bgTable bg-white">
                <thead>
                      <tr>
+                           <th>分享ID</th>
                            <th>分享方式</th>
                            <th>分享内容</th>
                            <th>分享时间</th>
@@ -16,7 +17,14 @@
                </thead>
                <tbody>
                      <tr ng-repeat="d in data.mod_data">
-                           <td ng-bind="d.share_type"></td>
+                           <td ng-bind="d.log_id"></td>
+                           <td>
+                                 <span ng-show="d.share_type == 1">微信好友</span>
+                                 <span ng-show="d.share_type == 2">微信朋友圈</span>
+                                 <span ng-show="d.share_type == 3">QQ好友</span>
+                                 <span ng-show="d.share_type == 4">QQ空间</span>
+                                 <span ng-show="d.share_type == 5">微博</span>
+                           </td>
                            <td ng-bind="d.content"></td>
                            <td ng-bind="d.share_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>      
                      </tr>

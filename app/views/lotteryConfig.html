@@ -40,7 +40,7 @@
                      <span style="color: #7BB5F7;" ng-bind="data.deadline > 0 ? '待开' : '已开奖' "></span>
                  </li>
                  <li style="width: 20%;">
-                     <div timer-btn start-time="data.deadline" get-data="getData(data.next_opentime | date: 'yyyy-MM-dd')"></div>
+                     <div timer-btn start-time="data.deadline" get-data="getData(data.next_opentime)"></div>
                  </li>
              </ul>
              <table class="bgTable bg-white" style="margin-top: 50px;">
