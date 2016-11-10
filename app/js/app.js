@@ -111,7 +111,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         abstract: true,
         templateUrl: helper.basepath('app.html'),
         controller: 'AppController',
-        resolve: helper.resolveFor('modernizr', 'icons')
+        resolve: helper.resolveFor('modernizr', 'icons', 'layer')
     })
     .state('app.homePage', {
         url: '/homePage',
@@ -229,7 +229,7 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
     .state('page', {
         url: '/page',
         templateUrl: 'app/pages/page.html',
-        resolve: helper.resolveFor('modernizr', 'icons'),
+        resolve: helper.resolveFor('modernizr', 'icons', 'layer'),
         controller: ["$rootScope", function($rootScope) {
             $rootScope.app.layout.isBoxed = false;
         }]
@@ -356,8 +356,8 @@ App
                              'vendor/editor/dist/js/wangEditor.min.js'],
       'datepicker':         ['vendor/datepicker/css/foundation-datepicker.css',
                              'vendor/datepicker/js/foundation-datepicker.js',
-                             'vendor/datepicker/js/locales/foundation-datepicker.zh-CN.js']
-
+                             'vendor/datepicker/js/locales/foundation-datepicker.zh-CN.js'],
+      'layer':              ['vendor/layer/layer.js']
     },
     // Angular based script (use the right module name)
     modules: [
@@ -1292,30 +1292,28 @@ App.directive('selectAdPos', function() { // 选择广告位ID
 
 
 
-App.directive('selectCategoryType', function() { // 分类类型选择
+App.directive('bgoSelect', function() { // 下拉选择器
     return {
         restrict: 'A',
         replace: true,
         scope: {
-            typeName: '=typeName',
-            type: '=type',
-            defaultType: '=defaultType'
+            val: '@val',
+            list: '=list',
+            means: '&means'
         },
-        template: '<div dropdown="" class="btn-group" style="margin-left: 0;">'+
+        template: '<div dropdown="" class="btn-group" style="margin: 0;">'+
                       '<button type="button" dropdown-toggle="" class="btn btn-default select-btn">'+
-                          '{{ typeName = typeName ? typeName : "商品" }} '+
-                          '<span class="caret" style="color: #78A7DE"></span>'+
+                          '<span ng-repeat="o in list" ng-if="val == o.val" ng-bind="o.valName" style="{{ \'color:\' + o.color }}"></span>'+
+                          '<span class="caret" style="color: #78A7DE;"></span>'+
                       '</button>'+
                       '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
-                          '<li ng-repeat="p in defaultType"><a ng-click="getType(p, $index+1)">{{ p }}</a>'+
+                          '<li ng-repeat="o in list"><a ng-click="getVal(o.val); means()">{{ o.valName }}</a>'+
                           '</li>'+
                       '</ul>'+
                   '</div>',
-        controller: function($scope) {
-            $scope.type = 1;
-            $scope.getType = function(p, _index) {
-                $scope.typeName = p;
-                $scope.type = _index;
+        controller: function($scope, ParamTransmit) {
+            $scope.getVal = function(val) {
+                ParamTransmit.setParam({ val });
             }
         }
                 
@@ -1382,7 +1380,6 @@ App.directive('lotteryIssue', function() { // 输入期数查询
                     timeout = $timeout(function() {
                         param.expect = $scope.expect;
                         ParamTransmit.setParam(param);
-                        $rootScope.isLoading = true;
                         $scope.getData();
                     }, 800);
                 }
@@ -1412,7 +1409,6 @@ App.directive('inputAutoSubmit', function() { // 输入框自动提交
                 if (newVal !== oldVal && oldVal != '') {
                     if(timeout) $timeout.cancel(timeout);
                     timeout = $timeout(function() {
-                        $rootScope.isLoading = true;
                         ParamTransmit.setParam({ key: $scope.key, val: $scope.val })
                         $scope.means();
                     }, 800);
@@ -1421,23 +1417,6 @@ App.directive('inputAutoSubmit', function() { // 输入框自动提交
         }
     }
 })
-
-
-
-
-App.directive('loadingFont', function() { // loading
-    return {
-        restrict: 'A',
-        replace: true,
-        template: '<div style="position: absolute;top: 50%;left: 45%;" ng-show="isLoading">'+
-                      '<i class="fa fa-spinner fa-pulse" style="margin-left: 10px;font-size: 2em;color: #7895AF"></i>'+
-                  '</div>',
-        controller: function($rootScope) {
-            $rootScope.isLoading = false;
-        }
-    }
-})
-
 
 
 
@@ -1715,11 +1694,19 @@ App.factory('ConnectApi', function($rootScope, $http, $state) {
       data: function(res, route) {
           if( res.data.code != 200 ) {
               if( res.data.code == 201 ) {
-                  $state.go('page.login');
+                  layer.alert("登录信息异常，请重新登录", {icon: 5}, function() {
+                      layer.closeAll(); 
+                      $state.go('page.login');
+                  });
+              }else {
+                  layer.alert(res.data.msg, {icon: 5}, function() {
+                      layer.closeAll();
+                  })
               }
-              alert(res.data.msg);
-          }else if(route) $state.go(route);
-
+          }else {
+              layer.closeAll();
+          }
+          if(route) $state.go(route);
           return res.data;
       }
     
@@ -1827,6 +1814,10 @@ App.factory('ParamTransmit', function($parse, $state) {
                param.token = oldParam.token;
            }else {
                console.log('token不存在，请手动设置token之后再调用setParam。');
+               layer.alert("登录信息异常，请重新登录", {icon: 5}, function() {
+                   layer.closeAll(); 
+                   $state.go('page.login');
+               });
            }
        }
        saveParam(param);
@@ -1895,7 +1886,6 @@ App.controller('LoginController', ["$scope", 'ConnectApi', '$state', 'ParamTrans
 
 App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
-
     $scope.isHaveData = true;
     $scope.getData = function() {
         $scope.param = ParamTransmit.getParam();
@@ -1913,7 +1903,6 @@ App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi'
                 };
                 ParamTransmit.setParam($scope.param);
             }
-            $rootScope.isLoading = false;
         });
     }
 
@@ -1931,10 +1920,32 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
     $scope.param = ParamTransmit.getParam();
     $scope.param.p = 0;
 
-    ConnectApi.start('post', 'member/index', $scope.param).then(function(response) {
-        var data = ConnectApi.data(response);
-        $scope.data = data.data.mod_data;
-    });
+    var getData = function() {
+        layer.load(2);
+        ConnectApi.start('post', 'member/index', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data.mod_data;
+        });
+    }
+    
+    getData();
+
+    $scope.bgoSelectList = [
+        { val: 0, valName: '正常', color: 'green'},
+        { val: 1, valName: '锁定', color: 'red'},
+    ]
+
+    $scope.setIsLocked = function(id) {
+        $scope.param = ParamTransmit.getParam();
+        $scope.param = {
+            user_id: id,
+            is_locked: $scope.param.val
+        }
+        ConnectApi.start('post', 'member/edit', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            getData();
+        });
+    }
 
     // 0 订单查询
     // 1 资金明细
@@ -1977,6 +1988,7 @@ App.controller('WinningUserController', ["$scope", '$rootScope', 'ConnectApi', '
     // expect 期数
     // status ==2为中奖用户，不填为全部购彩用户
     $rootScope.winner = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         $scope.param.p = 0;
         $scope.param.status = 2;
@@ -1993,9 +2005,10 @@ App.controller('WinningUserController', ["$scope", '$rootScope', 'ConnectApi', '
 
 App.controller('LotteryNoticeController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
 
+    layer.load(2);
     $scope.param = ParamTransmit.getParam();
-
     ConnectApi.start('post', 'lottery/newest_record', $scope.param).then(function(response) {
+        
         var data = ConnectApi.data(response);
         $scope.data = data.data;
     });
@@ -2025,10 +2038,11 @@ App.controller('LotteryListController', ["$scope", 'ConnectApi', '$state', 'Para
 
 // 彩票配置
 App.controller('LotteryConfigController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit) {
-
+    
     $scope.param = ParamTransmit.getParam();
 
     var getLotterySet = function() {
+        layer.load(2);
         ConnectApi.start('post', 'lottery/lottery_rule', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
@@ -2088,6 +2102,7 @@ App.controller('LotteryConfigController', ["$scope", '$rootScope', '$sce', 'Conn
 App.controller('LotteryHistoryController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
     $rootScope.getLotteryHistory = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         $scope.param.p = 0;
         ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
@@ -2112,7 +2127,7 @@ App.controller('LotteryHistoryController', ["$scope", '$rootScope', 'ConnectApi'
 App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectApi', '$state', 'ParamTransmit', '$timeout', function($scope, $rootScope, $sce, ConnectApi, $state, ParamTransmit, $timeout) {
 
     $rootScope.getCheckInsDate = function() {
-
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
 
         ConnectApi.start('post', 'plugins/get_sign_reward', $scope.param).then(function(response) {
@@ -2169,6 +2184,7 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
     }, 200);
 
     $rootScope.reset = function() {
+        layer.load(2);
         var reward = new Array;
         for(var i = 0; i < $scope.param.numOfDay.length; i++) {
             reward.push($scope.param.numOfDay[i] = {
@@ -2208,6 +2224,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     $scope.param.p = $scope.currentPage - 1;
 
     var getFaqList = function() {
+        layer.load(2);
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data.mod_data;
@@ -2217,31 +2234,18 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
     
     getFaqList();
 
-    $scope.article = function(act, name, id) {
-        var actionType = act;
-        var cat_name = name, faq_id = id;
-        switch(act) {
-            case 0:
-                ParamTransmit.setParam({ cat_name, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 1: 
-                ParamTransmit.setParam({ faq_id, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 2: 
-                ParamTransmit.setParam({ faq_id, actionType });
-                $state.go('app.addArticle');
-                break;
-            case 3: 
-                $scope.param = { faq_id };
-                ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
-                    $scope.data = data.data;
-                    getFaqList();
-                });
-                break;
-
+    $scope.article = function(act, id) {
+        $scope.param.actionType = act;
+        $scope.param.faq_id = id;
+        ParamTransmit.setParam($scope.param);
+        if(act == 3) {
+            ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
+                var data = ConnectApi.data(response);
+                $scope.data = data.data;
+                getFaqList();
+            });
+        }else {
+            $state.go('app.addArticle');
         }
     }
     
@@ -2287,6 +2291,7 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
     switch($scope.param.actionType) {
         case 0:
             $scope.save = function() {
+                layer.msg('保存成功！');
                 isEditOrNew();
                 ConnectApi.start('post', 'faq/add', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
@@ -2297,8 +2302,10 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
             }
             break;
         case 1: 
+            layer.load(2);
             getFaqDetails();
             $scope.save = function() {
+                layer.msg('保存成功！');
                 isEditOrNew();
                 ConnectApi.start('post', 'faq/edit', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response);
@@ -2309,6 +2316,7 @@ App.controller('AddArticleController', ["$scope", '$rootScope', '$sce', 'Connect
             }
             break;
         case 2: 
+            layer.load(2);
             getFaqDetails();
             break;
     }
@@ -2326,6 +2334,7 @@ App.controller('AdController', ["$scope", '$sce', 'ConnectApi', '$state', 'Param
     $scope.param = ParamTransmit.getParam();
     $scope.param.p = 0;
     var getAdList = function() {
+        layer.load(2);
         ConnectApi.start('post', 'admeta/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
@@ -2336,30 +2345,17 @@ App.controller('AdController', ["$scope", '$sce', 'ConnectApi', '$state', 'Param
     getAdList();
 
     $scope.ad = function(act, id) {
-        var actionType = act;
-        var ad_id = id;
-        switch(act) {
-            case 0:
-                ParamTransmit.setParam({ actionType });
-                $state.go('app.addAd');
-                break;
-            case 1: 
-                ParamTransmit.setParam({ ad_id, actionType });
-                $state.go('app.addAd');
-                break;
-            case 2: 
-                ParamTransmit.setParam({ ad_id, actionType });
-                $state.go('app.addAd');
-                break;
-            case 3: 
-                $scope.param = { ad_id };
-                ConnectApi.start('post', 'admeta/del', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
-                    $scope.data = data.data;
-                    getAdList();
-                });
-                break;
-
+        $scope.param.actionType = act;
+        $scope.param.ad_id = id;
+        ParamTransmit.setParam($scope.param);
+        if(act == 3) {
+            ConnectApi.start('post', 'admeta/del', $scope.param).then(function(response) {
+                var data = ConnectApi.data(response);
+                $scope.data = data.data;
+                getAdList();
+            });
+        }else {
+            $state.go('app.addAd');
         }
     }
 
@@ -2445,6 +2441,7 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
     switch($scope.param.actionType) {
         case 0:
             $scope.save = function() {
+                layer.msg('保存成功！');
                 isEditOrNew();
                 ConnectApi.start('post', 'admeta/add', $scope.param).then(function(response) {
                     var data = ConnectApi.data(response, 'app.ad');
@@ -2453,17 +2450,19 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
             }
             break;
         case 1: 
+            layer.load(2);
             getAdDetails();
             $scope.save = function() {
+                layer.msg('保存成功！');
                 isEditOrNew();
                 ConnectApi.start('post', 'admeta/edit', $scope.param).then(function(response) {
-                    var data = ConnectApi.data(response);
+                    var data = ConnectApi.data(response, 'app.ad');
                     $scope.data = data.data;
-                    $state.go('app.ad');
                 });
             }
             break;
         case 2: 
+            layer.load(2);
             getAdDetails();
             break;
     }
@@ -2476,6 +2475,7 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
 // 用户订单
 App.controller('UserOrderController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
     var getData = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'member/order_list', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2491,6 +2491,7 @@ App.controller('UserOrderController', ["$scope", '$rootScope', 'ConnectApi', '$s
 // 资金明细
 App.controller('FundsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
     var getData = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'member/scorelog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2506,6 +2507,7 @@ App.controller('FundsListController', ["$scope", '$rootScope', 'ConnectApi', '$s
 // 签到记录
 App.controller('CheckInsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
     var getData = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'member/signlog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2521,6 +2523,7 @@ App.controller('CheckInsListController', ["$scope", '$rootScope', 'ConnectApi', 
 // 分享详情
 App.controller('ShareListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
     var getData = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'member/sharelog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2536,6 +2539,7 @@ App.controller('ShareListController', ["$scope", '$rootScope', 'ConnectApi', '$s
 // 追号记录
 App.controller('AfterNoListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
     var getData = function() {
+        layer.load(2);
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'member/chase_list', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
@@ -2671,6 +2675,7 @@ App.controller('AddCategoryController', ["$scope", '$rootScope', 'ConnectApi', '
 App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', function($scope, ConnectApi, ParamTransmit) {
 
     var get = function() {
+        layer.load(2);
         ConnectApi.start('post', 'settings/get_config', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
@@ -2680,11 +2685,11 @@ App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', fun
     get();
 
     $scope.set = function() { 
+        layer.msg("修改成功！");
         $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'settings/edit_config', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
-            alert("修改成功！");
             get();
         });
     }

@@ -49,9 +49,10 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 0">发布文章</button>
-                <button type="submit" class="btn btn-danger" ng-show="param.actionType == 1">确定修改</button>
-                <button type="button" class="btn btn-danger" ui-sref="app.news" ng-show="param.actionType == 2">返回上一页</button>
+                <button type="submit" class="btn btn-danger" ng-if="param.actionType == 0">发布文章</button>
+                <button type="submit" class="btn btn-danger" ng-if="param.actionType == 1">确定修改</button>
+                <button type="button" class="btn btn-danger" ui-sref="app.news" ng-if="param.actionType == 2 && param.cat_name == '热门资讯'">返回上一页</button>
+                <button type="button" class="btn btn-danger" ui-sref="app.strategy" ng-if="param.actionType == 2 && param.cat_name == '攻略'">返回上一页</button>
            </div>
        </form>
    </div>

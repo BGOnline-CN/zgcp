@@ -2,7 +2,7 @@
    <div class="col-xs-12">
       <div class="title">攻略
             <!--<span style="margin-left: 50px;">排序：</span>-->
-            <button class="btn btn-danger" style="border-radius: 30px;float: right;padding: 3px 16px;" ng-click="article(0, '攻略')">
+            <button class="btn btn-danger" style="border-radius: 30px;float: right;padding: 3px 16px;" ng-click="article(0)">
                   <i class="fa fa-plus"></i>
                   新建文章
             </button>
@@ -22,14 +22,14 @@
                <tbody>
                      <tr ng-repeat="d in data">
                            <td>
-                                 <a href="" ng-click="article(2, '', d.faq_id)" ng-bind="d.title"></a>
+                                 <a href="" ng-click="article(2, d.faq_id)" ng-bind="d.title"></a>
                            </td>
                            <td ng-bind="d.author"></td>
                            <td ng-bind="d.add_time * 1000 | date: 'yyyy-MM-dd'"></td>
                            <td ng-bind="d.hits"></td>
                            <td>
-                                 <a href="" ng-click="article(1, '', d.faq_id)" style="margin-right: 5px;"><i class="fa fa-edit"></i></a>
-                                 <a href="" ng-click="article(3, '', d.faq_id)"><i class="fa fa-trash"></i></a>
+                                 <a href="" ng-click="article(1, d.faq_id)" style="margin-right: 5px;"><i class="fa fa-edit"></i></a>
+                                 <a href="" ng-click="article(3, d.faq_id)"><i class="fa fa-trash"></i></a>
                            </td>
                      </tr>
                      <tr>

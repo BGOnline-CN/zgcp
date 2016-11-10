@@ -22,7 +22,6 @@
                <tbody class="ball-details" ng-if="!isHaveData">
                     <tr>
                         <td colspan="2">
-                            <i loading-font></i>
                             <no-data></no-data>
                         </td>
                     </tr>
@@ -30,7 +29,6 @@
                <tbody class="ball-details" ng-if="isHaveData">
                     <tr>
                         <td colspan="2">
-                            <i loading-font></i>
                             <p class="ball-details-title">
                                 <span>
                                     <span ng-repeat="o in lotteryList" ng-if="data.lottery_code == o.lotteryCode">{{ o.name }}</span>
