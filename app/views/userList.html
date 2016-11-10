@@ -40,6 +40,11 @@
                                  <!--<a href="" title="追号记录" ng-click="action(4, d.user_id)">追</a>-->
                            </td>
                      </tr>
+                     <tr>
+                           <td colspan="9">
+                                 <div paging total-page="{{ totalpage }}" current-page="currentPage" get-data="getData(currentPage)"></div>
+                           </td>
+                     </tr>
                </tbody>
          </table>
    </div>

@@ -1621,22 +1621,20 @@ App.directive('paging', function() { // 分页
         replace: true,
         scope: {
             totalPage: '@totalPage',
-            currentPage: '@currentPage'
+            currentPage: '=currentPage',
+            getData: '&getData'
         },
         templateUrl: 'app/views/partials/paging.html',
         controller: function($scope) {
-            $scope.firstPage = function() {
-                $scope.currentPage = 1;
-            }
-            $scope.lastPage = function() {
-                $scope.currentPage = $scope.totalPage;
-            }
-            $scope.prePage = function() {
-                $scope.currentPage--;
-            }
-            $scope.nextPage = function() {
-                $scope.currentPage++;
-            }
+
+            $scope.firstPage = function() { $scope.currentPage = 1; }
+            $scope.lastPage = function() { $scope.currentPage = $scope.totalPage; }
+            $scope.prePage = function() { $scope.currentPage--; }
+            $scope.nextPage = function() { $scope.currentPage++; }
+
+            $scope.$watch('currentPage', function(newVal, oldVal) {
+                if(newVal != oldVal && oldVal != '') $scope.getData();
+            })
         }
     };
 });
@@ -1917,18 +1915,19 @@ App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi'
 
 App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamTransmit', function($scope, ConnectApi, $state, ParamTransmit) {
 
+    $scope.currentPage = 1;
     $scope.param = ParamTransmit.getParam();
-    $scope.param.p = 0;
-
-    var getData = function() {
+    $scope.getData = function(p) {
         layer.load(2);
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'member/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data.mod_data;
+            $scope.totalpage = data.data.page_data.totalpage;
         });
     }
     
-    getData();
+    $scope.getData();
 
     $scope.bgoSelectList = [
         { val: 0, valName: '正常', color: 'green'},
@@ -1943,7 +1942,7 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
         }
         ConnectApi.start('post', 'member/edit', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
-            getData();
+            $scope.getData();
         });
     }
 
@@ -2101,13 +2100,15 @@ App.controller('LotteryConfigController', ["$scope", '$rootScope', '$sce', 'Conn
 
 App.controller('LotteryHistoryController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
 
-    $rootScope.getLotteryHistory = function() {
+    $scope.currentPage = 1;
+    $rootScope.getLotteryHistory = function(p) {
         layer.load(2);
         $scope.param = ParamTransmit.getParam();
-        $scope.param.p = 0;
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'lottery/lottery_record', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
+            $scope.totalpage = data.data.page_data.totalpage;
         });
     }
 
@@ -2221,10 +2222,10 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
 
     $scope.currentPage = 1;
     $scope.param = ParamTransmit.getParam();
-    $scope.param.p = $scope.currentPage - 1;
 
-    var getFaqList = function() {
+    $scope.getFaqList = function(p) {
         layer.load(2);
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'faq/index', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data.mod_data;
@@ -2232,7 +2233,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
         });
     }
     
-    getFaqList();
+    $scope.getFaqList();
 
     $scope.article = function(act, id) {
         $scope.param.actionType = act;
@@ -2242,7 +2243,7 @@ App.controller('ArticleController', ["$scope", '$sce', 'ConnectApi', '$state', '
             ConnectApi.start('post', 'faq/del', $scope.param).then(function(response) {
                 var data = ConnectApi.data(response);
                 $scope.data = data.data;
-                getFaqList();
+                $scope.getFaqList();
             });
         }else {
             $state.go('app.addArticle');

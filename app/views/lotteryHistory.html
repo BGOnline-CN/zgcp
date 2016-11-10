@@ -31,6 +31,11 @@
                            <td ng-bind="d.issue_score"></td>
                            <td><a ng-click="goLotteryDetails(d.expect, data.lottery_data.lottery_code)">详情</a></td>
                      </tr>
+                     <tr>
+                           <td colspan="7">
+                                 <div paging total-page="{{ totalpage }}" current-page="currentPage" get-data="getLotteryHistory(currentPage)"></div>
+                           </td>
+                     </tr>
                </tbody>
          </table>
    </div>
