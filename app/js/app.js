@@ -1406,7 +1406,7 @@ App.directive('inputAutoSubmit', function() { // 输入框自动提交
             
             var timeout;
             $scope.$watch('val', function(newVal, oldVal) {
-                if (newVal !== oldVal && oldVal != '') {
+                if(newVal != oldVal && newVal) {
                     if(timeout) $timeout.cancel(timeout);
                     timeout = $timeout(function() {
                         ParamTransmit.setParam({ key: $scope.key, val: $scope.val })
@@ -2709,13 +2709,18 @@ App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', fun
     get();
 
     $scope.set = function() { 
-        layer.msg("修改成功！");
         $scope.param = ParamTransmit.getParam();
-        ConnectApi.start('post', 'settings/edit_config', $scope.param).then(function(response) {
-            var data = ConnectApi.data(response);
-            $scope.data = data.data;
-            get();
-        });
+        if(!isNaN($scope.param.val)) {
+            ConnectApi.start('post', 'settings/edit_config', $scope.param).then(function(response) {
+                var data = ConnectApi.data(response);
+                layer.msg("修改成功！");
+                $scope.data = data.data;
+                get();
+            });
+        }else {
+            layer.msg('请输入正确参数！', {icon: 5});
+        }
+        
     }
 
 
