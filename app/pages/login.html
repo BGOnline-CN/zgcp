@@ -2,10 +2,10 @@
     <div class="login-box">
         <p class="login-name">欢迎登录诸葛彩票</p>
         <div class="login-start clearfix">
-            <form action="" name="loginForm">
+            <form name="loginForm" ng-submit="go()" novalidate>
                 <input type="text" name="username" ng-model="param.username" placeholder="用户名">
                 <input type="password" name="password" ng-model="param.password" placeholder="密码">
-                <button type="button" class="btn btn-danger" ng-click="go()">登录</button>
+                <button type="submit" class="btn btn-danger">登录</button>
             </form>
         </div>
     </div>
