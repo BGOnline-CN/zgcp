@@ -25,7 +25,10 @@
                            </td>
                            <td ng-bind="d.nickname"></td>
                            <td><span sex="{{ d.sex }}"></span></td>
-                           <td ng-bind="d.score"></td>
+                           <td>
+                                 <img class="rechargeLogo" src="app/img/recharge.png" ng-click="recharge(d.user_id)" alt="充" title="充值彩金">
+                                 <span ng-bind="d.score | number "></span>
+                           </td>
                            <td ng-bind="d.province"></td>
                            <td ng-bind="d.city"></td>
                            <td>

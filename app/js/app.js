@@ -1936,21 +1936,36 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
 
     $scope.setIsLocked = function(id) {
         $scope.param = ParamTransmit.getParam();
-        $scope.param = {
-            user_id: id,
-            is_locked: $scope.param.val
-        }
+        $scope.param.user_id = id,
+        $scope.param.is_locked = $scope.param.val;
         ConnectApi.start('post', 'member/edit', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.getData();
         });
     }
 
-    // 0 订单查询
-    // 1 资金明细
-    // 2 签到记录
-    // 3 分享详情
-    // 4 追号记录
+    $scope.recharge = function(id) {
+        layer.prompt({ title: '请输入充值金额：' }, function(val, index) {
+            if(!isNaN(val)) {
+                $scope.param.user_id = id,
+                $scope.param.score = val;
+                ConnectApi.start('post', 'member/edit', $scope.param).then(function(response) {
+                    var data = ConnectApi.data(response);
+                    $scope.getData();
+                    layer.msg('成功充值：'+ val + '彩金');
+                });
+            }else {
+                layer.msg('请输入正确彩金数额！', {icon: 5});
+            }
+            layer.close(index);
+        });
+        
+    }
+
+    
+
+
+    // 0 订单查询 1 资金明细 2 签到记录 3 分享详情 4 追号记录
     $scope.action = function(actionType, user_id) {
         ParamTransmit.setParam({ user_id });
         switch(actionType) {
@@ -2475,64 +2490,72 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
 
 // 用户订单
 App.controller('UserOrderController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
-    var getData = function() {
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
         layer.load(2);
         $scope.param = ParamTransmit.getParam();
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'member/order_list', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
         });
     }
 
-    getData();
+    $scope.getData();
 }]);
 
 
 
 // 资金明细
 App.controller('FundsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
-    var getData = function() {
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
         layer.load(2);
         $scope.param = ParamTransmit.getParam();
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'member/scorelog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
         });
     }
 
-    getData();
+    $scope.getData();
 }]);
 
 
 
 // 签到记录
 App.controller('CheckInsListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
-    var getData = function() {
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
         layer.load(2);
         $scope.param = ParamTransmit.getParam();
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'member/signlog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
         });
     }
 
-    getData();
+    $scope.getData();
 }]);
 
 
 
 // 分享详情
 App.controller('ShareListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
-    var getData = function() {
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
         layer.load(2);
         $scope.param = ParamTransmit.getParam();
+        $scope.param.p = p-1;
         ConnectApi.start('post', 'member/sharelog', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
         });
     }
 
-    getData();
+    $scope.getData();
 }]);
 
 
