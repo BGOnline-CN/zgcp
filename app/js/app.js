@@ -1364,7 +1364,7 @@ App.directive('lotteryIssue', function() { // 输入期数查询
         restrict: 'A',
         replace: true,
         scope: {
-            expect: '@expect',
+            expect: '=expect',
             getData: '&getData'
         },
         template: '<div style="display: inline-block;margin-left: 10px;vertical-align: middle;">'+
@@ -1374,7 +1374,7 @@ App.directive('lotteryIssue', function() { // 输入期数查询
             
             var timeout;
             $scope.$watch('expect', function(newVal, oldVal) {
-                if (newVal !== oldVal && oldVal != '') {
+                if(newVal != oldVal && oldVal) {
                     var param = ParamTransmit.getParam();
                     if(timeout) $timeout.cancel(timeout);
                     timeout = $timeout(function() {
@@ -1620,7 +1620,7 @@ App.directive('paging', function() { // 分页
         restrict: 'A',
         replace: true,
         scope: {
-            totalPage: '@totalPage',
+            totalPage: '=totalPage',
             currentPage: '=currentPage',
             getData: '&getData'
         },
@@ -1633,7 +1633,7 @@ App.directive('paging', function() { // 分页
             $scope.nextPage = function() { $scope.currentPage++; }
 
             $scope.$watch('currentPage', function(newVal, oldVal) {
-                if(newVal != oldVal && oldVal != '') $scope.getData();
+                if(newVal != oldVal && newVal) $scope.getData();
             })
         }
     };
