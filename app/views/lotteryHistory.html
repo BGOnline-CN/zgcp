@@ -26,7 +26,7 @@
                            <td ng-bind="d.record_id"></td>
                            <td ng-bind="d.expect"></td>
                            <td ng-bind="d.opentime * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
-                           <td ng-bind="d.opencode"></td>
+                           <td ng-bind="d.opencode" style="color: #EA5A5A"></td>
                            <td ng-bind="d.buy_score"></td>
                            <td ng-bind="d.issue_score"></td>
                            <td><a ng-click="goLotteryDetails(d.expect, data.lottery_data.lottery_code)">详情</a></td>
