@@ -10,6 +10,7 @@
                <thead>
                      <tr>
                            <th>签到时间</th>
+                           <th>连续签到</th>
                            <th>状态</th>
                            <th>签到奖励</th>
                      </tr>
@@ -17,6 +18,7 @@
                <tbody>
                      <tr ng-repeat="d in data.mod_data">
                            <td ng-bind="d.sign_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                           <td>5</td>
                            <td>签到成功</td>
                            <td ng-bind="d.content | limitTo: -(d.content.length-8)"></td>
                      </tr>

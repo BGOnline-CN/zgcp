@@ -1,7 +1,9 @@
 <div class="row" ng-controller="AddArticleController">
    <div class="col-xs-12">
        <div class="title">
-            <a ui-sref="app.news">文章</a> > 
+            <a ui-sref="app.news" ng-if="param.cat_name == '热门资讯'">热门资讯</a>
+            <a ui-sref="app.strategy" ng-if="param.cat_name == '攻略'">攻略</a>
+             > 
             <span ng-show="param.actionType == 0">新建文章</span>
             <span ng-show="param.actionType == 1">修改文章</span>
             <span ng-show="param.actionType == 2">查看文章</span>
