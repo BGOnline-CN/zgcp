@@ -28,8 +28,8 @@
                                <img ng-src="{{ rootImgUrl + d.img }}" class="header" alt="广告图">
                            </td>
                            <td><a ng-href="{{ d.link }}" target="_blank">{{ d.link }}</a></td>
-                           <td ng-bind="d.begin_time * 1000 | date: 'yyyy-MM-dd hh:ii'"></td>
-                           <td ng-bind="d.end_time * 1000 | date: 'yyyy-MM-dd hh:ii'"></td>
+                           <td ng-bind="d.begin_time * 1000 | date: 'yyyy-MM-dd hh:mm'"></td>
+                           <td ng-bind="d.end_time * 1000 | date: 'yyyy-MM-dd hh:mm'"></td>
                            <td>
                                <a href="" ng-click="ad(2, d.ad_id)" style="margin-right: 15px;" title="查看"><i class="fa fa-eye"></i></a>
                                <a href="" ng-click="ad(1, d.ad_id)" style="margin-right: 15px;" title="编辑"><i class="fa fa-edit"></i></a>
