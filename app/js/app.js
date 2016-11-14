@@ -1322,33 +1322,6 @@ App.directive('bgoSelect', function() { // 下拉选择器
 })
 
 
-
-
-App.directive('orderBy', function() { // 排序
-    return {
-        restrict: 'A',
-        replace: true,
-        template: '<div dropdown="" class="btn-group">'+
-                      '<button type="button" dropdown-toggle="" class="btn btn-default select-btn"'+
-                                'ng-repeat="o in lotteryList" ng-if="lottery_code == o.lotteryCode">'+
-                                '{{o.name}} '+
-                          '<span class="caret" style="color: #78A7DE"></span>'+
-                      '</button>'+
-                      '<ul role="menu" class="dropdown-menu dropdown-menu-left animated fadeInUpShort">'+
-                          '<li ng-repeat="o in lotteryList"><a ng-click="">{{o.name}}</a>'+
-                          '</li>'+
-                      '</ul>'+
-                  '</div>',
-        controller: function($scope, ParamTransmit) {
-            var lottery = ParamTransmit.getParam();
-            $scope.lottery_code = lottery.lottery_code;
-        }
-                
-    }
-
-})
-
-
 App.directive('noData', function() { // 无此期号数据
     return {
         restrict: 'E',
