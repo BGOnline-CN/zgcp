@@ -17,7 +17,7 @@
                 <p class="big-title" ng-show="param.actionType == 2">查看文章</p>
                 <div class="form-con-div">
                     <p class="form-con-title">文章标题：</p>
-                    <input type="text" name="title" ng-model="title">
+                    <input type="text" name="title" ng-model="title" autofocus="autofocus">
                     <div class="error" ng-show="articleForm.title.$dirty && articleForm.title.$invalid">
                         <small ng-show="articleForm.title.$error.required">必填</small>
                     </div>
