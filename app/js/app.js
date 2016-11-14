@@ -1658,15 +1658,15 @@ App.directive('timerBtn', function() { // 倒计时按钮
                     .replace(/\b(\d)\b/g, "0$1");
             }
             
-            var timer = $interval;
-            timer(function() {
+            var timer = $interval(function() {
                 $scope.startTime -= 1;
                 $scope.showTime = formatTime($scope.startTime);
                 if($scope.startTime < 1) {
-                    timer.cancel(timer);
                     $scope.getData();
+                    $interval.cancel(timer);
                 };
-            }, 1000)
+            }, 1000);
+
         }
     };
 });
