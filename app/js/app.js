@@ -1635,7 +1635,7 @@ App.directive('timerBtn', function() { // 倒计时按钮
                 $scope.startTime -= 1;
                 $scope.showTime = formatTime($scope.startTime);
                 if($scope.startTime < 1) {
-                    $scope.getData();
+                    // $scope.getData();
                     $interval.cancel(timer);
                 };
             }, 1000);
