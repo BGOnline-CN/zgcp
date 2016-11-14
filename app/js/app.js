@@ -1692,7 +1692,7 @@ App.factory('ConnectApi', function($rootScope, $http, $state) {
       data: function(res, route) {
           if( res.data.code != 200 ) {
               if( res.data.code == 201 ) {
-                  layer.alert("登录信息异常，请重新登录", {icon: 5}, function() {
+                  layer.alert("登录信息异常，请重新登录", {closeBtn: 0, icon: 5}, function() {
                       layer.closeAll(); 
                       $state.go('page.login');
                   });
@@ -1812,7 +1812,7 @@ App.factory('ParamTransmit', function($parse, $state) {
                param.token = oldParam.token;
            }else {
                console.log('token不存在，请手动设置token之后再调用setParam。');
-               layer.alert("登录信息异常，请重新登录", {icon: 5}, function() {
+               layer.alert("登录信息异常，请重新登录", {closeBtn: 0, icon: 5}, function() {
                    layer.closeAll(); 
                    $state.go('page.login');
                });
