@@ -34,7 +34,7 @@
                            <td>
                               <div bgo-select val="{{ d.is_locked }}" list="bgoSelectList" means="setIsLocked(d.user_id)"></div>
                            </td>
-                           <td>{{ d.login_time * 1000 | date:'yyyy-MM-dd hh:mm' }}</td>
+                           <td>{{ d.login_time * 1000 | date:'yyyy-MM-dd hh:ii' }}</td>
                            <td>
                                  <a href="" title="订单查询" ng-click="action(0, d.user_id)">订</a>
                                  <a href="" title="资金明细" ng-click="action(1, d.user_id)">资</a>

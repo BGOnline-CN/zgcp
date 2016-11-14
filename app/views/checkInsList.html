@@ -17,7 +17,7 @@
                </thead>
                <tbody>
                      <tr ng-repeat="d in data.mod_data">
-                           <td ng-bind="d.sign_time * 1000 | date: 'yyyy-MM-dd hh:ss'"></td>
+                           <td ng-bind="d.sign_time * 1000 | date: 'yyyy-MM-dd hh:ii'"></td>
                            <td>5</td>
                            <td>签到成功</td>
                            <td ng-bind="d.content | limitTo: -(d.content.length-8)"></td>
