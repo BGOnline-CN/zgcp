@@ -1981,7 +1981,7 @@ App.controller('WinningUserController', ["$scope", '$rootScope', 'ConnectApi', '
         $scope.param.status = 2;
         ConnectApi.start('post', 'lottery/lottery_order', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
-            $scope.wData = data.data.mod_data;
+            $rootScope.wData = data.data.mod_data;
         });
     }
 }]);
