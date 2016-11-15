@@ -24,8 +24,8 @@
                            <td ng-bind="d.score"></td>
                            <td ng-bind="d.surplus_score"></td>
                            <td>
-                                 <span ng-if="d.type == 1">收入</span>
-                                 <span ng-if="d.type == 2">支出</span>
+                                 <span ng-if="d.type == 1" style="color: green;">收入</span>
+                                 <span ng-if="d.type == 2" style="color: red;">支出</span>
                            </td>
                            <td ng-bind="d.add_time * 1000 | date: 'yyyy-MM-dd hh:mm'"></td>
                      </tr>
