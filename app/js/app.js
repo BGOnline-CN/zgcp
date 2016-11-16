@@ -2673,6 +2673,7 @@ App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', fun
 
     var get = function() {
         layer.load(2);
+        $scope.param = ParamTransmit.getParam();
         ConnectApi.start('post', 'settings/get_config', $scope.param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
@@ -2683,16 +2684,16 @@ App.controller('SystemController', ["$scope", 'ConnectApi', 'ParamTransmit', fun
 
     $scope.set = function() { 
         $scope.param = ParamTransmit.getParam();
-        if(!isNaN($scope.param.val)) {
+        // if(!isNaN($scope.param.val)) {
             ConnectApi.start('post', 'settings/edit_config', $scope.param).then(function(response) {
                 var data = ConnectApi.data(response);
                 layer.msg("修改成功！");
                 $scope.data = data.data;
                 get();
             });
-        }else {
-            layer.msg('请输入正确参数！', {icon: 5});
-        }
+        // }else {
+            // layer.msg('请输入正确参数！', {icon: 5});
+        // }
         
     }
 
