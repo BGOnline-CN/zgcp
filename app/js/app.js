@@ -1354,7 +1354,7 @@ App.directive('lotteryIssue', function() { // 输入期数查询
                         param.expect = $scope.expect;
                         ParamTransmit.setParam(param);
                         $scope.getData();
-                    }, 800);
+                    }, 2000);
                 }
             })
         }
@@ -1384,7 +1384,7 @@ App.directive('inputAutoSubmit', function() { // 输入框自动提交
                     timeout = $timeout(function() {
                         ParamTransmit.setParam({ key: $scope.key, val: $scope.val })
                         $scope.means();
-                    }, 800);
+                    }, 2000);
                 }
             })
         }
