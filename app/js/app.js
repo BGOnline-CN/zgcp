@@ -2389,7 +2389,7 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
         return year + "-" + add0(month) + "-" + add0(day); 
     } 
 
-    $scope.defaultPosId = ['site']; // 广告位ID 默认参数
+    $scope.defaultPosId = ['site', 'find']; // 广告位ID 默认参数
     $scope.param = ParamTransmit.getParam();
 
     var uploader = $scope.uploader = new FileUploader({
