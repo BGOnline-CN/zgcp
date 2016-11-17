@@ -1,31 +1,39 @@
-<div class="row">
+<div class="row" ng-controller="CouponListController">
    <div class="col-xs-12">
-         <div class="title">点券列表
-            
-         </div>
+       <div class="title">
+            <a ui-sref="app.userList">用户列表</a> > 
+            <span  class="title" ng-bind="data.userInfo.nickname + ' 点券列表'"></span>
+       </div>
    </div>
    <div class="col-xs-12">
          <table class="bgTable bg-white">
                <thead>
                      <tr>
-                           <th>用户id</th>
-                           <th>点券</th>
-                           <th>点券市场</th>
+                           <th>点券ID</th>
+                           <th>点券市值</th>
                            <th>点券来源</th>
-                           <th>发放时间</th>
-                           <th>过期时间</th>
                            <th>点券状态</th>
+                           <th>过期时间</th>
+                           <th>发放日期</th>
                      </tr>
                </thead>
                <tbody>
+                     <tr ng-repeat="d in data.mod_data">
+                           <td ng-bind="d.coupon_id"></td>
+                           <td ng-bind="d.score"></td>
+                           <td ng-bind="d.source"></td>
+                           <td>
+                                 <span ng-if="d.status == 1" style="color: green;">可使用</span>
+                                 <span ng-if="d.status == 2">已使用</span>
+                                 <span ng-if="d.status == 0" style="color: red;">已过期</span>
+                           </td>
+                           <td ng-bind="d.expired_time * 1000 | date: 'yyyy-MM-dd'"></td>
+                           <td ng-bind="d.add_time * 1000 | date: 'yyyy-MM-dd'"></td>
+                     </tr>
                      <tr>
-                           <td>双色球</td>
-                           <td>2016122</td>
-                           <td>10-18</td>
-                           <td>15 22 23 24 23 12 01</td>
-                           <td>2016122</td>
-                           <td>10-18</td>
-                           <td>15 22 23 24 23 12 01</td>
+                           <td colspan="6">
+                                 <div paging total-page="data.page_data.totalpage" current-page="currentPage" get-data="getData(currentPage)"></div>
+                           </td>
                      </tr>
                </tbody>
          </table>

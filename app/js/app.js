@@ -140,11 +140,6 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         title: '分类管理',
         templateUrl: helper.basepath('addCategory.html')
     })
-    .state('app.coupon', {
-        url: '/coupon',
-        title: '点券',
-        templateUrl: helper.basepath('coupon.html')
-    })
     .state('app.news', {
         url: '/news',
         title: '热门资讯',
@@ -201,6 +196,11 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         url: '/userOrder',
         title: '订单查询',
         templateUrl: helper.basepath('userOrder.html')
+    })
+    .state('app.coupon', {
+        url: '/coupon',
+        title: '点券列表',
+        templateUrl: helper.basepath('coupon.html')
     })
     .state('app.fundsList', {
         url: '/fundsList',
@@ -1938,7 +1938,7 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
     
 
 
-    // 0 订单查询 1 资金明细 2 签到记录 3 分享详情 4 追号记录
+    // 0 订单查询 1 资金明细 2 签到记录 3 分享详情 4 点券列表
     $scope.action = function(actionType, user_id) {
         ParamTransmit.setParam({ user_id });
         switch(actionType) {
@@ -1955,7 +1955,7 @@ App.controller('UsersListController', ["$scope", 'ConnectApi', '$state', 'ParamT
                 $state.go('app.shareList');
                 break;
             case 4:
-                $state.go('app.afterNoList');
+                $state.go('app.coupon');
                 break;
         }
     }
@@ -2477,6 +2477,24 @@ App.controller('UserOrderController', ["$scope", '$rootScope', 'ConnectApi', '$s
     $scope.getData();
 }]);
 
+
+
+
+// 点券列表
+App.controller('CouponListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
+        layer.load(2);
+        $scope.param = ParamTransmit.getParam();
+        $scope.param.p = p - 1;
+        ConnectApi.start('post', 'member/coupon', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    $scope.getData();
+}]);
 
 
 // 资金明细

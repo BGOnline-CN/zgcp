@@ -11,11 +11,6 @@
       "translate": "sidebar.nav.CATEGORY"
     }
   },
-  { 
-    "sref": "app.coupon",
-    "icon": "",
-    "translate": "sidebar.nav.COUPON"
-  },
   {
     "sref": "#",
     "icon": "",
