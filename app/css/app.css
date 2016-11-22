@@ -556,7 +556,7 @@ body {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 121;
+  z-index: 122;
 }
 .layout-fixed .wrapper > aside {
   position: fixed;

@@ -494,3 +494,6 @@ div.title {
 .noDatacheckInsTr {
     border: 1px solid #f05050;
 }
+.navbar-header {
+    background-color: #1E1D25 !important;
+}

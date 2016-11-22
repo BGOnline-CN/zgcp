@@ -1,8 +1,10 @@
 [
   {
-    "sref": "app.homePage",
-    "icon": "",
-    "translate": "sidebar.nav.HOMEPAGE"
+    "我是一行注释": {
+      "sref": "app.homePage",
+      "icon": "",
+      "translate": "sidebar.nav.HOMEPAGE"
+    }
   },
   { 
     "我是一行注释": {
