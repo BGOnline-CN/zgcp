@@ -20,7 +20,7 @@
                      </tr>
                </thead>
                <tbody>
-                     <tr ng-repeat="d in param.numOfDay">
+                     <tr ng-repeat="d in param.numOfDay" ng-class="{ true: 'noDatacheckInsTr' }[!d.prize_coupon && !d.prize_score && !d.prize_lottery]">
                            <td>{{ $index + 1 + ' 天' }}</td>
                            <td>
                                  <span style="color: #EB5C5C" ng-bind="d.prize_coupon ? d.prize_coupon  + ' 张' : '0 张'" ng-show="!d.isEdit"></span>

@@ -2117,11 +2117,11 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
 
     $rootScope.getCheckInsDate = function() {
         layer.load(2);
-        $scope.param = ParamTransmit.getParam();
-
-        ConnectApi.start('post', 'plugins/get_sign_reward', $scope.param).then(function(response) {
+        var param = ParamTransmit.getParam();
+        ConnectApi.start('post', 'plugins/get_sign_reward', param).then(function(response) {
             var data = ConnectApi.data(response);
             $scope.data = data.data;
+            
             for(var i = 0; i < $scope.data.length; i++) {
 
                 var pc = parseInt($scope.data[i].prize_coupon);
@@ -2132,16 +2132,18 @@ App.controller('CheckInsController', ["$scope", '$rootScope', '$sce', 'ConnectAp
                 $scope.data[i].prize_score = ps ? ps : 0;
                 $scope.data[i].prize_lottery = pl ? pl : 0;
 
-                $scope.param.numOfDay[$scope.data[i].frequency - 1] = $scope.data[i];
+                param.numOfDay[$scope.data[i].frequency - 1] = $scope.data[i];
                 if($scope.data[i].is_grand_prix == 1 ) {
-                    $scope.param.numOfDay[$scope.data[i].frequency - 1].is_grand_prix = true;
+                    param.numOfDay[$scope.data[i].frequency - 1].is_grand_prix = true;
                 }
                 if($scope.data[i].is_grand_prix == 0) {
-                    $scope.param.numOfDay[$scope.data[i].frequency - 1].is_grand_prix = false;
+                    param.numOfDay[$scope.data[i].frequency - 1].is_grand_prix = false;
                 }
 
             }
 
+            $scope.param = param;
+            
             $scope.showEdit = function(_index, isEdit) {
                 var spDate = $scope.param.numOfDay[_index];
                 if(isEdit) {

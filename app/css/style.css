@@ -490,3 +490,7 @@ div.title {
     background-color: yellow;
     border-radius: 50%;
 }
+
+.noDatacheckInsTr {
+    border: 1px solid #f05050;
+}
