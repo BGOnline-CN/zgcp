@@ -1,0 +1,16 @@
+{
+  "name": "诸葛彩票",
+  "version": "0.0.1",
+  "main": "http://zhugecaipiao.thinktorch.cn/webmaster",
+  "window": {
+    "title": "诸葛彩票",
+    "toolbar": false,
+    "frame": true,
+    "show_in_taskbar": true,
+    "width": 800,
+    "height": 500,
+    "position": "center",
+    "min_width": 800,
+    "min_height": 500
+  }
+}

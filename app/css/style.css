@@ -269,6 +269,7 @@ div.title {
     font-size: 0.8em;
     text-align: center;
     vertical-align: middle;
+    line-height: 0;
 }
 .numSelect li button {
     width: 20px;
