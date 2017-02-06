@@ -41,6 +41,11 @@
     "translate": "sidebar.nav.USERLIST"
   },
   {
+    "sref": "app.noDrawList",
+    "icon": "",
+    "translate": "sidebar.nav.NODRAWLIST"
+  },
+  {
     "sref": "app.check-ins",
     "icon": "",
     "translate": "sidebar.nav.CHECK-INS"

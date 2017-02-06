@@ -18,6 +18,7 @@
       },
       "AD": "广告", 
       "USERLIST": "用户列表",
+      "NODRAWLIST": "未开奖列表",
       "CHECK-INS": "签到配置", 
       "SYSTEM": "系统配置"
     }

@@ -186,6 +186,12 @@ function ($stateProvider, $locationProvider, $urlRouterProvider, helper) {
         templateUrl: helper.basepath('system.html')
     })
 
+    .state('app.noDrawList', {
+        url: '/noDrawList',
+        title: '未开奖列表',
+        templateUrl: helper.basepath('noDrawList.html')
+    })
+
     .state('app.lotteryHistory', {
         url: '/lotteryHistory',
         title: '开奖历史',
@@ -1879,6 +1885,37 @@ App.controller('LotteryDetailsController', ["$scope", '$rootScope', 'ConnectApi'
 
     $scope.getData();
 
+}]);
+
+
+// 未开奖列表
+
+App.controller('noDrawListController', ["$scope", '$rootScope', 'ConnectApi', '$state', 'ParamTransmit', function($scope, $rootScope, ConnectApi, $state, ParamTransmit) {
+    
+    $scope.param = ParamTransmit.getParam();
+
+    $scope.currentPage = 1;
+    $scope.getData = function(p) {
+        layer.load(2);
+        $scope.param.p = p-1;
+        ConnectApi.start('post', 'lottery/no_lottery_order_all', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            $scope.data = data.data;
+        });
+    }
+
+    $scope.getData();
+
+    $scope.open = function(t, c) {
+        $scope.param.date = t;
+        $scope.param.lottery_code = c;
+        ConnectApi.start('post', 'lottery/manual_lottery', $scope.param).then(function(response) {
+            var data = ConnectApi.data(response);
+            if(data.code == 200) {
+				$scope.getData();
+			}
+        });
+    }
 }]);
 
 
