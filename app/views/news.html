@@ -12,6 +12,7 @@
          <table class="bgTable bg-white">
                <thead>
                      <tr>
+                           <th>ID</th>
                            <th>文章标题</th>
                            <th>作者</th>
                            <th>发布时间</th>
@@ -21,6 +22,7 @@
                </thead>
                <tbody>
                      <tr ng-repeat="d in data">
+                           <td ng-bind="d.faq_id"></td>
                            <td>
                                  <a href="" ng-click="article(2, d.faq_id)" ng-bind="d.title"></a>
                            </td>
@@ -33,7 +35,7 @@
                            </td>
                      </tr>
                      <tr>
-                           <td colspan="5">
+                           <td colspan="6">
                                  <div paging total-page="totalpage" current-page="currentPage" get-data="getFaqList(currentPage)"></div>
                            </td>
                      </tr>

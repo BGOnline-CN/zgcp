@@ -25,6 +25,13 @@
                     <div select-ad-pos pos-id="pos_id" default-pos-id="defaultPosId"></div>
                 </div>
                 <div class="form-con-div">
+                    <p class="form-con-title">跳转到文章：</p>
+                    <input type="text" name="faqId" ng-model="faq_id" placeholder="请填写文章ID">
+                    <div class="error" ng-show="articleForm.faqId.$dirty && articleForm.faqId.$invalid">
+                        <small ng-show="articleForm.faqId.$error.required">必填</small>
+                    </div>
+                </div>
+                <div class="form-con-div">
                     <p class="form-con-title">链接地址：</p>
                     <input type="url" name="url" ng-model="link">
                     <div class="error" ng-show="articleForm.url.$dirty && articleForm.url.$invalid">

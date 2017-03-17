@@ -1907,6 +1907,10 @@ App.controller('noDrawListController', ["$scope", '$rootScope', 'ConnectApi', '$
     $scope.getData();
 
     $scope.open = function(t, c) {
+        layer.msg('正在进行手动开奖...', {
+		  icon: 16
+		  ,shade: 0.01
+		});
         $scope.param.date = t;
         $scope.param.lottery_code = c;
         ConnectApi.start('post', 'lottery/manual_lottery', $scope.param).then(function(response) {
@@ -2443,6 +2447,7 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
 
         $scope.param.name = $scope.name;
         $scope.param.pos_id = $scope.pos_id;
+        $scope.param.faq_id = $scope.faq_id;
         $scope.param.link = $scope.link;
         $scope.param.begin_time = $('#dpd1').val();
         $scope.param.end_time = $('#dpd2').val();
@@ -2456,6 +2461,7 @@ App.controller('AddAdController', ["$scope", '$rootScope', '$sce', 'ConnectApi',
             $scope.data = data.data;
             $scope.name = $scope.data.name;
             $scope.pos_id = $scope.data.pos_id;
+            $scope.faq_id = $scope.data.faq_id;
             $scope.link = $scope.data.link;
             var bging_time = parseInt($scope.data.begin_time) * 1000;
             var end_time = parseInt($scope.data.end_time) * 1000;
